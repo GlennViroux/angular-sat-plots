@@ -1,0 +1,20 @@
+<h1>Ground station coverage</h1>
+
+<div class="d-flex flex-row mb-3">
+    <button class="btn btn-success mx-1" (click)="playSat()">
+        <i class="fa fa-play"></i>
+    </button>
+    <button class="btn btn-danger mx-1" (click)="stopSat()">
+        <i class="fa fa-stop"></i>
+    </button>
+    <p class="my-auto ml-4">
+        <span *ngIf="currentProperties">
+            UTC Time: {{currentProperties.epoch}}
+        </span>
+    </p>
+</div>
+<div class="d-flex flex-row justify-content-center">
+    <input type="range" id="satSlider" min="0" max="1000" [(ngModel)]="satTrackTime" #ranger (input)="moveSat(+ranger.value)">
+</div>
+
+<div id="coverage" style="position: relative;"></div>
