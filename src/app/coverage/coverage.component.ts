@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
-import { E21Points, E21Polygon, E21LineString, IGSStations } from '../data';
+import { E21Points, E21LineString, IGSStations } from '../data';
 import { WorldGeoJSON } from '../data/world_geo';
+import { Config } from '../config';
 
 import * as d3 from 'd3';
 import * as d3Geo from 'd3-geo-voronoi';
+import { ConfigService } from '../services/config.service';
 //const d3Geo = require('d3-geo-voronoi');
 
 @Component({
@@ -14,71 +16,155 @@ import * as d3Geo from 'd3-geo-voronoi';
 })
 export class CoverageComponent implements OnInit {
 
+  plotConfig:Config = new Config();
+  renderComplete:boolean = false;
+  configPristine:boolean = true;
+  igsStationsData:any;
+  
   svg: any;
   g: any;
-  width: any;
-  height: any;
-  projection:any;
+  projection: any;
   path: any;
   tooltip: any;
-  satTrack: any;
-  currentProperties:any;
-  currentSatCircle:any;
-  voronoi:any;
-  voronoiGrid:any;
-  satMoving:boolean = false;
-  satTrackTime:number = 0;
-  margin: any = { top: 0, right: 0, bottom: 0, left: 0 };
+  satTips:{[prn:string]:any} = {};
+  satTracks: {[prn:string]:any} = {};
+  currentTime:any = "";
+  currentProperties: {[prn:string]:any} = {};
+  currentSatCircles: {[prn:string]:any} = {};
+  voronois: {[prn:string]:any} = {};
+  satPointsData: {[prn:string]:any} = {};
+  voronoiGrids: {[prn:string]:any} = {};
+  satsMoving: boolean = false;
+  satTrackTime: number = 0;
+  width: number;
+  height: number;
+  outer_width: number;
+  outer_height: number;
+  margin: any = { top: 10, right: 10, bottom: 10, left: 10 };
 
-  constructor() {
-    this.width = 900 - this.margin.left - this.margin.right;
-    this.height = 500 - this.margin.bottom - this.margin.top;
+  svg_times: any;
+  g_times: any;
+  x: any;
+  y: any;
+  width_times: number;
+  height_times: number;
+  outer_width_times: number;
+  outer_height_times: number;
+  data: {[prn:string]:any} = {};
+  timeseriesTracks: {[prn:string]:any} = {};
+  currentSatCircleTimes: {[prn:string]:any} = {};
+  satTipsTimes: {[prn:string]:any} = {};
+  margin_times: any = { top: 40, right: 20, bottom: 50, left: 60 };
+
+  constructor(configService:ConfigService) {
+    this.outer_width = 1150;
+    this.outer_height = 700
+    this.width = this.outer_width - this.margin.left - this.margin.right;
+    this.height = this.outer_height - this.margin.bottom - this.margin.top;
+
+    this.outer_width_times = 700;
+    this.outer_height_times = 500;
+    this.width_times = this.outer_width_times - this.margin_times.left - this.margin_times.right;
+    this.height_times = this.outer_height_times - this.margin_times.bottom - this.margin_times.top;
+
+    configService.configObservable.subscribe((newConfig:any)=>{
+      this.plotConfig = newConfig;
+      this.configPristine = false;
+      this.drawAll().then((_:any) => {
+        configService.drawingComplete();
+      });
+      
+    })
+    
   }
 
-  ngOnInit(): void {
-    //this.playSat();
+  ngOnInit(){}
 
-    this.initSvg();  
+  async drawAll() {
+
+    this.initSvg();
+
+    //GeoMap Plot
+    this.drawCountries();
+    this.drawGraticule();
+    await this.drawSatTrack();
+    await this.drawVoronoi();
+    this.drawMovingSat();
+    await this.drawIgsStations();
+    this.drawSatStationConnections();
     
-    this.drawCountries().then((_) => {
-      this.drawGraticule();
-      this.drawSatTrack();
-      this.drawSatPositions();
-      this.drawMovingSat();
-      this.drawIgsStations();
-      this.drawSatStationConnections();
-    })
+    //Timeseries Plot
+    this.getDataTimeseries();
+    this.drawAxes();
+    this.drawGrid();
+    this.drawLines();
+    this.drawMovingSatTimes();
+
+    this.renderComplete = true;
   }
 
   initSvg() {
+    //Clean all
+    d3.selectAll("#coverage svg").remove();
+    d3.selectAll("#coverage g").remove();
+    d3.selectAll("#coverage div").remove();
+    d3.selectAll("#timeseriesPlot svg").remove();
+    d3.selectAll("#timeseriesPlot g").remove();
+    d3.selectAll("#timeseriesPlot div").remove();
+
+    //GeoMap plot
     this.svg = d3.select("#coverage")
       .append("svg")
-      .attr("width", "100%")
-      .attr("height", "100%")
-      .attr("viewBox", "0 0 900 500")
+      .attr("width", this.width + this.margin.left + this.margin.right)
+      .attr("height", this.height + this.margin.top + this.margin.bottom)
+      .attr("viewBox", `0 0 ${this.outer_width} ${this.outer_height}`)
       .attr("display", "block");
 
     this.g = this.svg.append("g")
       .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
 
+    this.g.append("text")
+    .attr("transform",`translate(${this.width/2},20)`)
+    .style("text-anchor","middle")
+    .style("font-size","xx-large")
+    .text("World view")
+
     this.tooltip = d3.select("#coverage")
       .append("div")
       .style("position", "absolute")
-      .style("opacity", 0)
       .style("background-color", "white")
       .style("border", "solid")
       .style("border-width", "2px")
       .style("border-radius", "5px")
       .style("padding", "5px")
+      .style("opacity", 0)
 
     this.projection = d3.geoNaturalEarth1()
       .translate([this.width / 2, this.height / 2])
-      .scale(150)
-      .rotate([0,0,0]);
+      .scale(210)
+      .rotate([0, 0, 0]);
     this.path = d3.geoPath().projection(this.projection);
+
+    //Timeseries plot
+    this.svg_times = d3.select("#timeseriesPlot")
+      .append("svg")
+      .attr("width", this.width_times + this.margin_times.left + this.margin_times.right)
+      .attr("height", this.height_times + this.margin_times.top + this.margin_times.bottom)
+      .attr("viewBox", `0 0 ${this.outer_width_times} ${this.outer_height_times}`)
+      .attr("display", "block");
+
+    this.g_times = this.svg_times.append("g")
+      .attr("transform", `translate(${this.margin_times.left},${this.margin_times.top})`);
+
+    this.g_times.append("text")
+      .attr("transform",`translate(${this.width_times/2},-10)`)
+      .style("text-anchor","middle")
+      .style("font-size","xx-large")
+      .text("# stations in view by satellites")
   }
 
-  async drawCountries() {
+  //GeoMap Plot
+  drawCountries() {
     //let pathData: any = <any>await d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson");
     this.g.selectAll("countries")
       .data(WorldGeoJSON.features)
@@ -103,208 +189,447 @@ export class CoverageComponent implements OnInit {
       .style("opacity", "0.3")
   }
 
-  drawSatTrack() {
-    let newPath:any = this.g.append("path")
-      .data(E21LineString.features)
-      .join("path")
-      .attr("d", this.path)
-      .style("stroke", "coral")
-      .style("stroke-width", "1.5")
-      .style("opacity","0.7")
-      .attr("fill","none")
+  async drawSatTrack() {
+    for (let prn of this.plotConfig.prns){
+      let year:string = this.plotConfig.date.format("YYYY");
+      let month:string = this.plotConfig.date.format("MM");
+      let day:string = this.plotConfig.date.format("DD");
+      let dataJSON: any = <any>await d3.json(`https://333b001b0394.ngrok.io/data/sat_track/${prn}?year=${year}&month=${month}&day=${day}`);
+  
+      let newPath:any = this.g.append("path")
+        .data(dataJSON.features)
+        .join("path")
+        .attr("d", this.path)
+        .style("stroke", "darkgreen")
+        .style("stroke-width", "1.5")
+        .style("opacity", "0.7")
+        .attr("fill", "none")
+  
+      this.satTracks[prn] = newPath.node();
+    }
 
-    this.satTrack = newPath.node();
   }
- 
-  drawSatPositions() {
-    this.voronoi = d3Geo.geoVoronoi(E21Points.features);
-    
-    this.voronoiGrid = this.g.selectAll("voronoiGrid")
-    .data(this.voronoi.polygons().features)
-    .join("path")
-      .attr("d",this.path)
-      .style("opacity","0")
-      /*
-      .on("mouseover", (event: any, i: any) => {
-        this.tooltip
-        .style("opacity", "1");
-      })
-      .on("mousemove", (event: any, i: any) => {
-        this.tooltip.html(
-          i.properties.site.properties.number_stations_in_view
-          +"<br>"+
-          i.properties.site.properties.stations_in_view)
-          .style("left", event.offsetX + 10 + "px")
-          .style("top", event.offsetY + "px");
-      })
-      .on("mouseleave", (event: any, i: any) => {
-        this.tooltip
-        .style("opacity", "0");
-      })
-      */
+
+  async drawVoronoi() {
+    for (let prn of this.plotConfig.prns){
+      let year:string = this.plotConfig.date.format("YYYY");
+      let month:string = this.plotConfig.date.format("MM");
+      let day:string = this.plotConfig.date.format("DD");
+  
+      let dataJSON: any = <any>await d3.json(`https://333b001b0394.ngrok.io/data/sat_points/${prn}?year=${year}&month=${month}&day=${day}`);
+
+      for (let feature of dataJSON.features){
+        let stationsInViewArray:string[] = feature.properties.stations_in_view.split(" ");
+        let filteredStationsInView:string[] = stationsInViewArray.filter((station:string) => {
+          return this.plotConfig.stations.indexOf(station)>-1;
+        });
+        feature.properties.stations_in_view = filteredStationsInView.join(" ");
+        feature.properties.number_stations_in_view = filteredStationsInView.length;
+      }
+
+      this.satPointsData[prn] = dataJSON;
+      this.voronois[prn] = d3Geo.geoVoronoi(dataJSON.features);
+      this.voronoiGrids[prn] = this.g.selectAll("voronoiGrid")
+        .data(this.voronois[prn].polygons().features)
+        .join("path")
+        .attr("d", this.path)
+        .style("opacity", "0")
+    }
+
   }
 
   drawMovingSat() {
-    let satTrackLength:number = this.satTrack.getTotalLength();
-    let r:any = d3.interpolate(0,satTrackLength);
-    let point:any = this.satTrack.getPointAtLength((r(this.satTrackTime/1000)));
-    this.currentSatCircle = this.g.append("circle")
-    .attr("cx",point.x)
-    .attr("cy",point.y)
-    .attr("r",6)
-    .style("fill","darkorange")
-    .on("mouseover", (event: any, i: any) => {
-      this.tooltip
-      .style("opacity", "1");
-    })
-    .on("mousemove", (event: any, i: any) => {
-      this.updateCurrentProperties()
-      this.tooltip.html(
-        "Epoch: "+this.currentProperties.epoch
-        +"<br>"+
-        "Stations in view: "+this.currentProperties.stations_in_view
-        )
-        .style("left", event.offsetX + 10 + "px")
-        .style("top", event.offsetY + "px");
-    })
-    .on("mouseleave", (event: any, i: any) => {
-      this.tooltip
-      .style("opacity", "0");
-    })
+    for (let prn of this.plotConfig.prns){
+      let thisTrack = this.satTracks[prn];
+
+      let satTrackLength: number = thisTrack.getTotalLength();
+      let r: any = d3.interpolate(0, satTrackLength);
+      let point: any = this.satTracks[prn].getPointAtLength(r(this.satTrackTime / 200));
+      this.currentSatCircles[prn] = this.g.append("circle")
+        .attr("cx", point.x)
+        .attr("cy", point.y)
+        .attr("r", 6)
+        .style("fill", "darkorange")
+        /*
+        .on("mouseover", (event: any, i: any) => {
+          this.tooltip
+            .style("opacity", "1");
+  
+          d3.select(event.currentTarget)
+            .attr("r", 11);
+        })
+        .on("mousemove", (event: any, i: any) => {
+          this.updateCurrentProperties(prn);
+          this.tooltip.html(
+            "Epoch: " + this.currentProperties[prn].epoch
+            + "<br>" +
+            "Stations in view: " + this.currentProperties[prn].stations_in_view
+          )
+            .style("left", event.offsetX + 10 + "px")
+            .style("top", event.offsetY + "px");
+        })
+        .on("mouseleave", (event: any, i: any) => {
+          this.tooltip
+            .style("opacity", "0");
+  
+          d3.select(event.currentTarget)
+            .attr("r", 6);
+        });
+        */
+        this.satTips[prn] = d3.select("#coverage")
+        .append("div")
+          .html(prn)
+          .style("left",point.x - 30 + "px")
+          .style("top",point.y + "px")
+          .style("position", "absolute")
+          .style("opacity", 1)
+          .style("background-color", "white")
+          .style("border", "solid")
+          .style("border-width", "2px")
+          .style("border-radius", "5px")
+          .style("padding", "2px")
+        
+
+    }
+
   }
 
-  moveSat(t:number){
-    this.satTrackTime = t;
-    let satTrackLength:number = this.satTrack.getTotalLength();
-    let r:any = d3.interpolate(0,satTrackLength);
-    let point:any = this.satTrack.getPointAtLength((r(this.satTrackTime/1000)));
-    this.currentSatCircle.attr("cx",point.x)
-    .attr("cy",point.y)
+  moveSats(t: number) {
+    for (let prn of this.plotConfig.prns){
+      this.satTrackTime = t;
 
+      //GeoMap
+      let satTrackLength: number = this.satTracks[prn].getTotalLength();
+      let r: any = d3.interpolate(0, satTrackLength);
+      let point: any = this.satTracks[prn].getPointAtLength((r(this.satTrackTime / 200)));
+      this.currentSatCircles[prn]
+      .attr("cx", point.x)
+      .attr("cy", point.y)
+      this.satTips[prn]
+      .style("left",point.x - 30 + "px")
+      .style("top",point.y+"px")
+      
+  
+      //Timeseries
+      satTrackLength = this.timeseriesTracks[prn].getTotalLength();
+      r = d3.interpolate(0, satTrackLength);
+      point = this.timeseriesTracks[prn].getPointAtLength(r(this.satTrackTime / 200));
+      this.currentSatCircleTimes[prn]
+      .attr("cx", point.x)
+      .attr("cy", point.y)
+      this.satTipsTimes[prn]
+      .style("left",point.x + 22 + "px")
+      .style("top",point.y+"px")
+    }
     this.drawSatStationConnections();
 
   }
 
-  sleep(ms:number){
-    return new Promise( resolve => {setTimeout(resolve,ms)});
+  sleep(ms: number) {
+    return new Promise(resolve => { setTimeout(resolve, ms) });
   }
 
-  async playSat(){
-    if (!this.satMoving){
-      this.satMoving = true;
-      if (this.satTrackTime>=1000){
-        this.satTrackTime=0;
+  async playSat() {
+    if (!this.satsMoving) {
+      this.satsMoving = true;
+      if (this.satTrackTime >= 200) {
+        this.satTrackTime = 0;
       }
-  
-      while (this.satTrackTime<=1000 && this.satMoving){
-        await this.sleep(50);
-        this.satTrackTime = this.satTrackTime+1;
-        this.moveSat(this.satTrackTime)
+
+      while (this.satTrackTime <= 200 && this.satsMoving) {
+        await this.sleep(200);
+        this.satTrackTime = this.satTrackTime + 0.7;
+        this.moveSats(this.satTrackTime)
       }
-      this.satMoving = false;
+      this.satsMoving = false;
     }
   }
 
-  stopSat(){
-    this.satMoving = false;
+  stopSat() {
+    this.satsMoving = false;
   }
 
-  drawIgsStations(){
-    let configuredStations:string = "ABMF ZAMB RBAY RABT RCMN UCLU UCAL MRL2 METG GRAS GOLD"
-    this.g.selectAll("igsStations")
-    .data(IGSStations.features.filter((d:any)=>{
+  async drawIgsStations() {
+    let configuredStations: string[] = this.plotConfig.stations;
+    let year:string = this.plotConfig.date.format("YYYY");
+    let month:string = this.plotConfig.date.format("MM");
+    let day:string = this.plotConfig.date.format("DD");
+    let dataJSON: any = <any>await d3.json(`https://333b001b0394.ngrok.io/data/igs_stations/T01?year=${year}&month=${month}&day=${day}`);
+    this.igsStationsData = dataJSON;
+    this.igsStationsData.features = dataJSON.features.filter((d: any) => {
       return configuredStations.includes(d.properties.station);
-    }))
+    });
+
+    this.g.selectAll("igsStations")
+    .data(this.igsStationsData.features)
     .join("circle")
-      //.attr("d",this.path.pointRadius(4))
-      .attr("cx",(d:any)=>{return this.projection(d.geometry.coordinates)[0]})
-      .attr("cy",(d:any)=>{return this.projection(d.geometry.coordinates)[1]})
-      .attr("r",4)
-      .style("fill","crimson")
+      .attr("cx", (d: any) => { return this.projection(d.geometry.coordinates)[0]})
+      .attr("cy", (d: any) => { return this.projection(d.geometry.coordinates)[1]})
+      .attr("r", 6)
+      .attr("class",(d:any) => "station-"+d.properties.station)
+      .style("fill", "crimson")
+
+    this.g.selectAll("igsVoronoiGrid")
+    .data(d3Geo.geoVoronoi(this.igsStationsData.features).polygons().features)
+    .join("path")
+      .attr("d",this.path)
+      .style("opacity",0)
       .on("mouseover", (event: any, i: any) => {
         this.tooltip
-        .style("opacity", "1");
-
-        console.log(event.currentTarget);
-        
-        d3.select(event.currentTarget)
-        .transition()
-        .duration(100)
-        .attr("r","10");
-        
-        
+          .style("opacity", "1");
+        console.log(event);
+        console.log(i);
+        d3.select(".station-"+i.properties.site.properties.station)
+          .transition()
+          .duration(100)
+          .attr("r", 13);
       })
       .on("mousemove", (event: any, i: any) => {
         this.tooltip.html(
-          "Station name: "+i.properties.station
-          +"<br>"+
-          "Receiver type: "+i.properties.receiver
-          +"<br>"+
-          "Antenna type: "+i.properties.antenna
-          +"<br>"+
-          "Clock type: "+i.properties.clock
-          )
+          "Station name: " + i.properties.site.properties.station
+          + "<br>" +
+          "Receiver type: " + i.properties.site.properties.receiver
+          + "<br>" +
+          "Antenna type: " + i.properties.site.properties.antenna
+          + "<br>" +
+          "Clock type: " + i.properties.site.properties.clock
+        )
           .style("left", event.offsetX + 10 + "px")
           .style("top", event.offsetY + "px");
       })
       .on("mouseleave", (event: any, i: any) => {
         this.tooltip
-        .style("opacity", "0");
-
-        d3.select(event.currentTarget)
-        .transition()
-        .duration(100)
-        .attr("r","4");
+          .style("opacity", "0");
+        d3.select(".station-"+i.properties.site.properties.station)
+          .transition()
+          .duration(100)
+          .attr("r", 6);
       })
+      
+    /*
+    this.g.selectAll("igsStations")
+    .data(this.igsStationsData.features)
+    .join("circle")
+      .attr("cx", (d: any) => { return this.projection(d.geometry.coordinates)[0]})
+      .attr("cy", (d: any) => { return this.projection(d.geometry.coordinates)[1]})
+      .attr("r",20)
+      .style("opacity",0)
+      
+      .on("mouseover", (event: any, i: any) => {
+        this.tooltip
+          .style("opacity", "1");
+
+        //d3.select(event.currentTarget)
+        
+        d3.select(".station-"+i.properties.station)
+          .transition()
+          .duration(100)
+          .attr("r", "10");
+        
+      })
+      .on("mousemove", (event: any, i: any) => {
+        this.tooltip.html(
+          "Station name: " + i.properties.station
+          + "<br>" +
+          "Receiver type: " + i.properties.receiver
+          + "<br>" +
+          "Antenna type: " + i.properties.antenna
+          + "<br>" +
+          "Clock type: " + i.properties.clock
+        )
+          .style("left", event.offsetX + 10 + "px")
+          .style("top", event.offsetY + "px");
+      })
+      .on("mouseleave", (event: any, i: any) => {
+        this.tooltip
+          .style("opacity", "0");
+
+        //d3.select(event.currentTarget)
+        d3.select(".station-"+i.properties.station)
+          .transition()
+          .duration(100)
+          .attr("r", "4");
+      })
+      */
   }
 
-  updateCurrentProperties(){
-    let x = this.currentSatCircle.attr("cx");
-    let y = this.currentSatCircle.attr("cy");
-    let inverted = this.projection.invert([x,y]);
-    let foundIndex = this.voronoi.find(inverted[0],inverted[1]);
-    let foundFeature:any = this.voronoi.polygons().features[foundIndex];
+  updateCurrentProperties(prn:string) {
+    let x = this.currentSatCircles[prn].attr("cx");
+    let y = this.currentSatCircles[prn].attr("cy");
+    let inverted = this.projection.invert([x, y]);
+    let foundIndex = this.voronois[prn].find(inverted[0], inverted[1]);
+    let foundFeature: any = this.voronois[prn].polygons().features[foundIndex];
 
-    this.currentProperties = foundFeature.properties.site.properties;
-
-    //this.voronoiGrid._groups[0][foundIndex].style.opacity = 1;
+    this.currentProperties[prn] = foundFeature.properties.site.properties;
+    this.currentTime = this.currentProperties[prn].epoch;
   }
 
-  getCurrentSatPoint(){
-    let x = this.currentSatCircle.attr("cx");
-    let y = this.currentSatCircle.attr("cy");
-    let currentSatPoint = [+x,+y];
+  getCurrentSatPoint(prn:string) {
+    let x = this.currentSatCircles[prn].attr("cx");
+    let y = this.currentSatCircles[prn].attr("cy");
+    let currentSatPoint = [+x, +y];
     return currentSatPoint;
   }
 
-  drawSatStationConnections(){
+  drawSatStationConnections() {
     d3.selectAll(".connection-lines").remove();
+    for (let prn of this.plotConfig.prns){
+      let currentSatPoint = this.getCurrentSatPoint(prn);
+      this.updateCurrentProperties(prn);
+      let stationsInView: string = this.currentProperties[prn].stations_in_view;
+      let filteredStations: any[] = this.igsStationsData.features.filter((d: any) => {
+        let cond1:boolean = stationsInView.includes(d.properties.station);
+        let cond2:boolean = this.plotConfig.stations.indexOf(d.properties.station)>-1;
+        return cond1 && cond2;
+      });
+  
+      let links: any[] = [];
+      filteredStations.forEach((station: any) => {
+        let toPush: any = {
+          type: "LineString",
+          coordinates: [this.projection.invert(currentSatPoint), station.geometry.coordinates]
+        }
+        links.push(toPush);
+      })
+  
+      this.g.selectAll("connectionlines")
+      .data(links)
+      .join("path")
+        .attr("d", this.path)
+        .attr("class", "connection-lines")
+        .attr("fill", "none")
+        .style("stroke", "darkorange")
+        .style("opacity", "0.9")
+        .style("stroke-width", "2")
+    }
 
-    let currentSatPoint = this.getCurrentSatPoint();
-    this.updateCurrentProperties();
-    let stationsInView:string = this.currentProperties.stations_in_view;
-    let filteredStations:any[] = IGSStations.features.filter((d:any)=>{
-      return stationsInView.includes(d.properties.station);
-    });
 
-    let links:any[] = [];
-    filteredStations.forEach((station:any)=>{
-      let toPush:any = {
-        type:"LineString",
-        coordinates:[this.projection.invert(currentSatPoint),station.geometry.coordinates]
-      }
-      links.push(toPush);
-    })
+  }
 
-    this.g.selectAll("connectionlines")
-    .data(links)
-    .join("path")
-      .attr("d",this.path)
-      .attr("class","connection-lines")
-      .attr("fill","none")
-      .style("stroke","darkorange")
-      .style("opacity","0.9")
-      .style("stroke-width","2")
+  //Timeseries plot
+  getDataTimeseries(){
+    for (let prn of this.plotConfig.prns){
+      let newData = this.satPointsData[prn].features.map((feature:any) => {
+        return {epoch:new Date(feature.properties.epoch),stations:feature.properties.number_stations_in_view}
+      });
+      this.data[prn] = newData;
 
+      /*
+      let year:string = this.plotConfig.date.format("YYYY");
+      let month:string = this.plotConfig.date.format("MM");
+      let day:string = this.plotConfig.date.format("DD");
+      let dataJSON:any = <any>await d3.json(`https://333b001b0394.ngrok.io/data/timeseries/${prn}?year=${year}&month=${month}&day=${day}`);
+      dataJSON = dataJSON.map((element:any)=>{
+        let newElement = element
+        newElement.epoch = new Date(element.epoch);
+        return newElement;
+      });
+      this.data[prn] = dataJSON;
+      */
+    }
+  }
+
+  drawAxes() {
+    this.x = d3.scaleTime().rangeRound([0, this.width_times]);
+    this.y = d3.scaleLinear().rangeRound([this.height_times, 0]);
+    let allEpochs = [];
+    let allStations = [];
+    for (let prn of this.plotConfig.prns){
+      allEpochs.push(...this.data[prn].map((d:any) => d.epoch));
+      allStations.push(...this.data[prn].map((d:any) => d.stations));
+    }
+    this.x.domain(d3.extent(allEpochs));
+    this.y.domain(d3.extent(allStations));
+
+    this.g_times.append("g")
+      .attr("transform", `translate(0,${this.height_times})`)
+      .attr("class", "xAxis")
+      .call(d3.axisBottom(this.x))
+
+    this.g_times.append("g")
+      .attr("class", "yAxis")
+      .call(d3.axisLeft(this.y))
+
+    this.g_times.append("text")
+      .attr("transform",
+        "translate(" + (this.width_times / 2) + " ," +
+        (this.height_times + this.margin.top + 30) + ")")
+      .style("text-anchor", "middle")
+      .text("Epoch");
+
+    this.g_times.append("text")
+      .attr("transform", `translate(${20 - this.margin_times.left},${this.height_times / 2})rotate(-90)`)
+      .style("text-anchor", "middle")
+      .text("# Stations in view")
+
+  }
+
+  drawGrid() {
+    this.g_times.append("g")
+      .attr("class", "grid")
+      .style("opacity", "0.2")
+      .attr("transform", `translate(0,${this.height_times})`)
+      .call(
+        d3.axisBottom(this.x)
+          .tickFormat((d: any, i: any) => '')
+          .tickSize(-this.height_times)
+          .ticks(10)
+      );
+
+    this.g_times.append("g")
+      .attr("class", "grid")
+      .style("opacity", "0.2")
+      //.attr("transform",`translate(0,${this.height})`)
+      .call(
+        d3.axisLeft(this.y)
+          .tickFormat((d: any, i: any) => '')
+          .tickSize(-this.width_times)
+          .ticks(10)
+      );
+  }
+
+  drawLines() {
+    for (let prn of this.plotConfig.prns){
+      let newPath:any = this.g_times.append("path")
+      .datum(this.data[prn])
+      .attr("d", d3.line()
+        .x((d: any) => this.x(d.epoch))
+        .y((d: any) => this.y(d.stations))
+      )
+      .attr("fill", "none")
+      .attr("stroke", "darkorange")
+      .style("opacity", "0.8")
+      .attr("stroke-width", "2");
+
+      this.timeseriesTracks[prn] = newPath.node();
+    }
+
+  }
+
+  drawMovingSatTimes() {
+    for (let prn of this.plotConfig.prns){
+      let satTrackLength: number = this.timeseriesTracks[prn].getTotalLength();
+      let r: any = d3.interpolate(0, satTrackLength);
+      let point: any = this.timeseriesTracks[prn].getPointAtLength(r(this.satTrackTime / 1000));
+  
+      this.currentSatCircleTimes[prn] = this.g_times.append("circle")
+        .attr("cx", point.x)
+        .attr("cy", point.y)
+        .attr("r", 6)
+        .style("fill", "darkorange")
+
+      this.satTipsTimes[prn] = d3.select("#timeseriesPlot")
+      .append("div")
+        .html(prn)
+        .style("left",point.x + 22 + "px")
+        .style("top",point.y + "px")
+        .style("position", "absolute")
+        .style("opacity", 1)
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "2px")
+    }
   }
 }
