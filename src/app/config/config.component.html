@@ -66,10 +66,10 @@
                             <div class="card-body">
                                 <p>Make a selection from these IGS stations:</p>
                                 <div class="d-flex flex-row">
-                                    <!--
+                                    
                                     <button type="button" class="btn btn-outline-info mx-2"
                                         (click)="selectAllStations()">Select all</button>
-                                    -->
+                                    
                                     <button type="button" class="btn btn-outline-danger mx-2"
                                         (click)="clearAllStations()">Clear all</button>
                                 </div>
@@ -97,8 +97,6 @@
                                 {{station}}
                             </div>
                         </div>
-
-
                         <button type="button" class="close mb-auto ml-auto" aria-label="Close"
                             (click)="removeErrorMsg('stations')">
                             <span aria-hidden="true">&times;</span>
@@ -300,10 +298,27 @@
                                 {{sat}}
                             </div>
                         </div>
-
-
                         <button type="button" class="close mb-auto ml-auto" aria-label="Close"
                             (click)="removeErrorMsg('sats')">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="noDataSats.length>=1">
+                <div class="alert alert-warning my-2" role="alert">
+                    <div class="d-flex flex-row">
+                        <div class="flex-column">
+                            <div class="pl-1 my-auto">
+                                <strong>Warning</strong>: no data was found for the following satellites on the provided date:
+                            </div>
+                            <div class="ml-1" *ngFor="let sat of noDataSats">
+                                {{sat}}
+                            </div>
+                        </div>
+                        <button type="button" class="close mb-auto ml-auto" aria-label="Close"
+                            (click)="removeErrorMsg('noDataSats')">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>

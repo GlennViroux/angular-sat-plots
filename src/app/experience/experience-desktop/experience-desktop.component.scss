@@ -1,0 +1,19 @@
+
+#exp-title {
+    text-align: center;
+    margin-top: 5vh;
+}
+
+.card {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.card-header:hover {
+    opacity: 1;
+}

@@ -1,10 +1,30 @@
-@import '~bootstrap/dist/css/bootstrap.min.css';
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-/* Importing Bootstrap SCSS file. */
-@import '~bootstrap/scss/bootstrap';
+@import "~bootstrap/scss/bootstrap";
+@import './assets/styles/constants';
 
 * {
-    font-family: Optima, sans-serif !important; 
+    transition: opacity 0.3s;
 }
+
+a {
+    cursor: pointer;
+    color: black;
+    text-decoration: underline;
+    text-decoration-color: $mycolor;
+}
+
+a:hover {
+    color: $mycolor;
+    text-decoration: none;
+    transition: 0.4s;
+}
+
+.nav-link {
+    cursor: pointer;
+}
+
+
+* {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
+
+

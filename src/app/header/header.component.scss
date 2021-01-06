@@ -1,0 +1,58 @@
+@import '../../assets/styles/constants';
+
+a{
+    text-decoration: none;
+}
+
+.navbar{
+    padding-top: 3vh;
+    padding-left: 2vw;
+}
+
+.nav-item{
+    position: relative;
+    width: 110px;
+    text-align: center;
+    font-size: medium;
+}
+
+.nav-link {
+    color: inherit !important; 
+    opacity: 0.6 !important;
+}
+
+.nav-link:hover{
+    opacity: 1 !important;
+}
+
+.myline-bottom{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background-color:$mycolor;
+    width: 0%;
+    transition: 0.4s;
+}
+
+.nav-item:hover .myline-bottom {
+    width: 100%;
+    transition: 0.4s;
+    transition-timing-function: cubic-bezier(0.3, 0, 0.8, 1);
+}
+
+#personal-logo{
+    height: 5vh;
+    width: 5vh;
+    color: black;
+    cursor: pointer;
+    opacity: 0.4;
+}
+
+#personal-logo:hover{
+    opacity: 1;
+}
+
+.social-icons{
+    padding-left: 3vw;
+}

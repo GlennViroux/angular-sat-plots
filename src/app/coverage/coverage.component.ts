@@ -1,13 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
-import { E21Points, E21LineString, IGSStations } from '../data';
-import { WorldGeoJSON } from '../data/world_geo';
 import { Config } from '../config';
-
 import * as d3 from 'd3';
 import * as d3Geo from 'd3-geo-voronoi';
 import { ConfigService } from '../services/config.service';
-//const d3Geo = require('d3-geo-voronoi');
 
 @Component({
   selector: 'app-coverage',
@@ -20,6 +16,7 @@ export class CoverageComponent implements OnInit {
   renderComplete:boolean = false;
   configPristine:boolean = true;
   igsStationsData:any;
+  enableConfig:{[param:string]:boolean} = {};
   
   svg: any;
   g: any;
@@ -27,6 +24,7 @@ export class CoverageComponent implements OnInit {
   path: any;
   tooltip: any;
   satTips:{[prn:string]:any} = {};
+  statTips:{[station:string]:any} = {};
   satTracks: {[prn:string]:any} = {};
   currentTime:any = "";
   currentProperties: {[prn:string]:any} = {};
@@ -67,6 +65,9 @@ export class CoverageComponent implements OnInit {
     this.width_times = this.outer_width_times - this.margin_times.left - this.margin_times.right;
     this.height_times = this.outer_height_times - this.margin_times.bottom - this.margin_times.top;
 
+    this.enableConfig["connectionLines"] = true;
+    this.enableConfig["stationLabels"] = false;
+
     configService.configObservable.subscribe((newConfig:any)=>{
       this.plotConfig = newConfig;
       this.configPristine = false;
@@ -85,13 +86,15 @@ export class CoverageComponent implements OnInit {
     this.initSvg();
 
     //GeoMap Plot
-    this.drawCountries();
+    await this.drawCountries();
     this.drawGraticule();
     await this.drawSatTrack();
     await this.drawVoronoi();
     this.drawMovingSat();
     await this.drawIgsStations();
-    this.drawSatStationConnections();
+    if (this.enableConfig["connectionLines"]){
+      this.drawSatStationConnections();
+    }
     
     //Timeseries Plot
     this.getDataTimeseries();
@@ -164,10 +167,10 @@ export class CoverageComponent implements OnInit {
   }
 
   //GeoMap Plot
-  drawCountries() {
-    //let pathData: any = <any>await d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson");
+  async drawCountries() {
+    let pathData: any = <any>await d3.json("https://3add8f553bcb.ngrok.io/earth");
     this.g.selectAll("countries")
-      .data(WorldGeoJSON.features)
+      .data(pathData.features)
       .join("path")
       .attr("d", this.path)
       .attr("fill", "steelblue")
@@ -194,7 +197,7 @@ export class CoverageComponent implements OnInit {
       let year:string = this.plotConfig.date.format("YYYY");
       let month:string = this.plotConfig.date.format("MM");
       let day:string = this.plotConfig.date.format("DD");
-      let dataJSON: any = <any>await d3.json(`https://333b001b0394.ngrok.io/data/sat_track/${prn}?year=${year}&month=${month}&day=${day}`);
+      let dataJSON: any = <any>await d3.json(`https://3add8f553bcb.ngrok.io/data/sat_track/${prn}?year=${year}&month=${month}&day=${day}`);
   
       let newPath:any = this.g.append("path")
         .data(dataJSON.features)
@@ -216,7 +219,7 @@ export class CoverageComponent implements OnInit {
       let month:string = this.plotConfig.date.format("MM");
       let day:string = this.plotConfig.date.format("DD");
   
-      let dataJSON: any = <any>await d3.json(`https://333b001b0394.ngrok.io/data/sat_points/${prn}?year=${year}&month=${month}&day=${day}`);
+      let dataJSON: any = <any>await d3.json(`https://3add8f553bcb.ngrok.io/data/sat_points/${prn}?year=${year}&month=${month}&day=${day}`);
 
       for (let feature of dataJSON.features){
         let stationsInViewArray:string[] = feature.properties.stations_in_view.split(" ");
@@ -288,8 +291,6 @@ export class CoverageComponent implements OnInit {
           .style("border-width", "2px")
           .style("border-radius", "5px")
           .style("padding", "2px")
-        
-
     }
 
   }
@@ -321,7 +322,10 @@ export class CoverageComponent implements OnInit {
       .style("left",point.x + 22 + "px")
       .style("top",point.y+"px")
     }
-    this.drawSatStationConnections();
+    if (this.enableConfig["connectionLines"]){
+      this.drawSatStationConnections();
+    }
+    
 
   }
 
@@ -354,7 +358,7 @@ export class CoverageComponent implements OnInit {
     let year:string = this.plotConfig.date.format("YYYY");
     let month:string = this.plotConfig.date.format("MM");
     let day:string = this.plotConfig.date.format("DD");
-    let dataJSON: any = <any>await d3.json(`https://333b001b0394.ngrok.io/data/igs_stations/T01?year=${year}&month=${month}&day=${day}`);
+    let dataJSON: any = <any>await d3.json(`https://3add8f553bcb.ngrok.io/data/igs_stations/T01?year=${year}&month=${month}&day=${day}`);
     this.igsStationsData = dataJSON;
     this.igsStationsData.features = dataJSON.features.filter((d: any) => {
       return configuredStations.includes(d.properties.station);
@@ -377,8 +381,6 @@ export class CoverageComponent implements OnInit {
       .on("mouseover", (event: any, i: any) => {
         this.tooltip
           .style("opacity", "1");
-        console.log(event);
-        console.log(i);
         d3.select(".station-"+i.properties.site.properties.station)
           .transition()
           .duration(100)
@@ -404,53 +406,25 @@ export class CoverageComponent implements OnInit {
           .transition()
           .duration(100)
           .attr("r", 6);
-      })
-      
-    /*
-    this.g.selectAll("igsStations")
-    .data(this.igsStationsData.features)
-    .join("circle")
-      .attr("cx", (d: any) => { return this.projection(d.geometry.coordinates)[0]})
-      .attr("cy", (d: any) => { return this.projection(d.geometry.coordinates)[1]})
-      .attr("r",20)
-      .style("opacity",0)
-      
-      .on("mouseover", (event: any, i: any) => {
-        this.tooltip
-          .style("opacity", "1");
+      });
+  }
 
-        //d3.select(event.currentTarget)
-        
-        d3.select(".station-"+i.properties.station)
-          .transition()
-          .duration(100)
-          .attr("r", "10");
-        
-      })
-      .on("mousemove", (event: any, i: any) => {
-        this.tooltip.html(
-          "Station name: " + i.properties.station
-          + "<br>" +
-          "Receiver type: " + i.properties.receiver
-          + "<br>" +
-          "Antenna type: " + i.properties.antenna
-          + "<br>" +
-          "Clock type: " + i.properties.clock
-        )
-          .style("left", event.offsetX + 10 + "px")
-          .style("top", event.offsetY + "px");
-      })
-      .on("mouseleave", (event: any, i: any) => {
-        this.tooltip
-          .style("opacity", "0");
-
-        //d3.select(event.currentTarget)
-        d3.select(".station-"+i.properties.station)
-          .transition()
-          .duration(100)
-          .attr("r", "4");
-      })
-      */
+  drawStationTips(){
+    this.igsStationsData.features.forEach((feature:any) => {
+      d3.select("#coverage")
+      .append("div")
+      .html(feature.properties.station)
+      .attr("class","station-labels")
+      .style("left", this.projection(feature.geometry.coordinates)[0]+12+"px")
+      .style("top", this.projection(feature.geometry.coordinates)[1]+12+"px")
+      .style("position", "absolute")
+      .style("opacity", 1)
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "2px")
+    });
   }
 
   updateCurrentProperties(prn:string) {
@@ -518,7 +492,7 @@ export class CoverageComponent implements OnInit {
       let year:string = this.plotConfig.date.format("YYYY");
       let month:string = this.plotConfig.date.format("MM");
       let day:string = this.plotConfig.date.format("DD");
-      let dataJSON:any = <any>await d3.json(`https://333b001b0394.ngrok.io/data/timeseries/${prn}?year=${year}&month=${month}&day=${day}`);
+      let dataJSON:any = <any>await d3.json(`https://3add8f553bcb.ngrok.io/data/timeseries/${prn}?year=${year}&month=${month}&day=${day}`);
       dataJSON = dataJSON.map((element:any)=>{
         let newElement = element
         newElement.epoch = new Date(element.epoch);
@@ -632,4 +606,26 @@ export class CoverageComponent implements OnInit {
         .style("padding", "2px")
     }
   }
+
+  setConnectionLines(event:any){
+    if (event.srcElement.checked){
+      this.drawSatStationConnections();
+      this.enableConfig["connectionLines"] = true;
+    } else {
+      this.enableConfig["connectionLines"] = false;
+      d3.selectAll(".connection-lines").remove();
+    }
+  }
+
+  setStationLabels(event:any){
+    console.log(event.srcElement.checked);
+    if (event.srcElement.checked){
+      this.drawStationTips();
+      this.enableConfig["stationLabels"] = true;
+    } else {
+      this.enableConfig["stationLables"] = false;
+      d3.selectAll(".station-labels").remove();
+    }
+  }
+
 }

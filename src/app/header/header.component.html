@@ -1,0 +1,59 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+    <a class="navbar-brand mr-auto" href="/">
+        <mat-icon id="personal-logo" svgIcon="personal-logo"></mat-icon>
+    </a>
+
+    <button class="navbar-toggler btn btn-outline-primary" type="button" data-toggle="collapse"
+        data-target="#navbarCollapseTarget" aria-expanded="false" aria-label="Toggle navigation"
+        (click)="isCollapsed = !isCollapsed" [attr.aria-expanded]="!isCollapsed" aria-controls="navbarTogglerDemo02">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarCollapseTarget" [ngbCollapse]="!isCollapsed">
+        <ul class="navbar-nav mt-2 mt-lg-0 container-fluid justify-content-end">
+            <li class="nav-item mx-1">
+                <div class="myline-bottom"></div>
+                <a class="nav-link" (click)="clickEvent($event,'about')">About</a>
+            </li>
+
+            <li class="nav-item mx-1">
+                <div class="myline-bottom"></div>
+                <a class="nav-link" (click)="clickEvent($event,'experience')">Experience</a>
+            </li>
+            <li class="nav-item mx-1">
+                <div class="myline-bottom"></div>
+                <a class="nav-link" (click)="clickEvent($event,'projects')">Projects</a>
+            </li>
+            <li class="nav-item mx-1">
+                <div class="myline-bottom"></div>
+                <a class="nav-link" (click)="clickEvent($event,'contact')">Contact</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Dropdown
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="#">Action</a>
+                  <a class="dropdown-item" href="#">Another action</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+              </li>
+                        
+            <div class="social-icons" style="font-size: 1.05rem;" *ngIf="!appStateService.getIsMobileResolution()">
+                <li class="d-flex flex-row">
+                    <a class="nav-link" href="https://github.com/GlennViroux" target="_blank">
+                        <i class="fab fa-github fa-lg"></i>
+                    </a>
+                    <a class="nav-link" href="https://github.com/GlennViroux" target="_blank">
+                        <i class="fab fa-linkedin-in fa-lg"></i>
+                    </a>
+                    <a class="nav-link" href="https://github.com/GlennViroux" target="_blank">
+                        <i class="fab fa-facebook fa-lg"></i>
+                    </a>
+                </li>
+            </div>
+            
+        </ul>
+    </div>
+</nav>
