@@ -15,7 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list'
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
-//import { CarouselModule, WavesModule } from 'angular-bootstrap-md';
+import { CarouselModule, WavesModule } from 'angular-bootstrap-md';
 
 
 import { CoverageComponent } from './coverage/coverage.component';
@@ -58,7 +58,9 @@ import { ContactDesktopComponent } from './contact/contact-desktop/contact-deskt
     NgbModalModule,
     NgbModule,
     MatIconModule,
-    HttpClientModule
+    HttpClientModule,
+    CarouselModule,
+    WavesModule
   ],
   providers: [MatDatepickerModule],
   bootstrap: [AppComponent]

@@ -20,14 +20,7 @@
                 <div class="myline-bottom"></div>
                 <a class="nav-link" (click)="clickEvent($event,'experience')">Experience</a>
             </li>
-            <li class="nav-item mx-1">
-                <div class="myline-bottom"></div>
-                <a class="nav-link" (click)="clickEvent($event,'projects')">Projects</a>
-            </li>
-            <li class="nav-item mx-1">
-                <div class="myline-bottom"></div>
-                <a class="nav-link" (click)="clickEvent($event,'contact')">Contact</a>
-            </li>
+
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Dropdown
@@ -39,7 +32,16 @@
                   <a class="dropdown-item" href="#">Something else here</a>
                 </div>
               </li>
-                        
+              
+            <li class="nav-item mx-1">
+                <div class="myline-bottom"></div>
+                <a class="nav-link" (click)="clickEvent($event,'projects')">Projects</a>
+            </li>
+            <li class="nav-item mx-1">
+                <div class="myline-bottom"></div>
+                <a class="nav-link" (click)="clickEvent($event,'contact')">Contact</a>
+            </li>
+
             <div class="social-icons" style="font-size: 1.05rem;" *ngIf="!appStateService.getIsMobileResolution()">
                 <li class="d-flex flex-row">
                     <a class="nav-link" href="https://github.com/GlennViroux" target="_blank">
@@ -53,7 +55,7 @@
                     </a>
                 </li>
             </div>
-            
+
         </ul>
     </div>
 </nav>
