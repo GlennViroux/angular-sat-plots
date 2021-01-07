@@ -7,7 +7,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
@@ -16,7 +15,7 @@ import { MatListModule } from '@angular/material/list'
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 import { CarouselModule, WavesModule } from 'angular-bootstrap-md';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { CoverageComponent } from './coverage/coverage.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -49,6 +48,7 @@ import { ContactDesktopComponent } from './contact/contact-desktop/contact-deskt
     AppRoutingModule,
     FontAwesomeModule,
     FormsModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     MatDatepickerModule,
     MatFormFieldModule,

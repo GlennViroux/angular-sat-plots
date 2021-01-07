@@ -32,10 +32,10 @@ export class ConfigComponent implements OnInit {
   isCollapsed: { [htmlId: string]: boolean } = {};
 
   constructor(private configService: ConfigService) {
-    d3.json<Promise<string[]>>("http://3add8f553bcb.ngrok.io/stations")
+    d3.json<Promise<string[]>>("http://ad1b704a28c2.ngrok.io/stations")
       .then((d: any) => {
         this.IgsStations = d;
-        d3.json<Promise<string[]>>("http://3add8f553bcb.ngrok.io/prns")
+        d3.json<Promise<string[]>>("http://ad1b704a28c2.ngrok.io/prns")
           .then((d: any) => {
             this.allSatellites = d.sort((n1: string, n2: string) => {
               if (n1 > n2) {
@@ -74,7 +74,7 @@ export class ConfigComponent implements OnInit {
     this.successfullUpload = false;
 
     //Check provided date
-    let checkData: any = await d3.json(`https://3add8f553bcb.ngrok.io/check?year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
+    let checkData: any = await d3.json(`https://ad1b704a28c2.ngrok.io/check?year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
     if (!checkData.sat_points || !checkData.sat_track || !checkData.stations) {
       this.invalidDate = true;
       this.submitLoading = false;
@@ -104,7 +104,7 @@ export class ConfigComponent implements OnInit {
     let satsCopy:string[] = [...configuredSatellites];
     for (let index=0;index<satsCopy.length;index++){
       let sat:string = satsCopy[index];
-      let checkData:any = await d3.json(`https://3add8f553bcb.ngrok.io/check?sat=${sat}&year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
+      let checkData:any = await d3.json(`https://ad1b704a28c2.ngrok.io/check?sat=${sat}&year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
       if (!sat) {
         let removeIndex:number = configuredSatellites.indexOf(sat);
         configuredSatellites.splice(removeIndex,1);

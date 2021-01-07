@@ -168,7 +168,7 @@ export class CoverageComponent implements OnInit {
 
   //GeoMap Plot
   async drawCountries() {
-    let pathData: any = <any>await d3.json("https://3add8f553bcb.ngrok.io/earth");
+    let pathData: any = <any>await d3.json("https://ad1b704a28c2.ngrok.io/earth");
     this.g.selectAll("countries")
       .data(pathData.features)
       .join("path")
@@ -197,7 +197,7 @@ export class CoverageComponent implements OnInit {
       let year:string = this.plotConfig.date.format("YYYY");
       let month:string = this.plotConfig.date.format("MM");
       let day:string = this.plotConfig.date.format("DD");
-      let dataJSON: any = <any>await d3.json(`https://3add8f553bcb.ngrok.io/data/sat_track/${prn}?year=${year}&month=${month}&day=${day}`);
+      let dataJSON: any = <any>await d3.json(`https://ad1b704a28c2.ngrok.io/data/sat_track/${prn}?year=${year}&month=${month}&day=${day}`);
   
       let newPath:any = this.g.append("path")
         .data(dataJSON.features)
@@ -219,7 +219,7 @@ export class CoverageComponent implements OnInit {
       let month:string = this.plotConfig.date.format("MM");
       let day:string = this.plotConfig.date.format("DD");
   
-      let dataJSON: any = <any>await d3.json(`https://3add8f553bcb.ngrok.io/data/sat_points/${prn}?year=${year}&month=${month}&day=${day}`);
+      let dataJSON: any = <any>await d3.json(`https://ad1b704a28c2.ngrok.io/data/sat_points/${prn}?year=${year}&month=${month}&day=${day}`);
 
       for (let feature of dataJSON.features){
         let stationsInViewArray:string[] = feature.properties.stations_in_view.split(" ");
@@ -358,7 +358,7 @@ export class CoverageComponent implements OnInit {
     let year:string = this.plotConfig.date.format("YYYY");
     let month:string = this.plotConfig.date.format("MM");
     let day:string = this.plotConfig.date.format("DD");
-    let dataJSON: any = <any>await d3.json(`https://3add8f553bcb.ngrok.io/data/igs_stations/T01?year=${year}&month=${month}&day=${day}`);
+    let dataJSON: any = <any>await d3.json(`https://ad1b704a28c2.ngrok.io/data/igs_stations/T01?year=${year}&month=${month}&day=${day}`);
     this.igsStationsData = dataJSON;
     this.igsStationsData.features = dataJSON.features.filter((d: any) => {
       return configuredStations.includes(d.properties.station);
@@ -492,7 +492,7 @@ export class CoverageComponent implements OnInit {
       let year:string = this.plotConfig.date.format("YYYY");
       let month:string = this.plotConfig.date.format("MM");
       let day:string = this.plotConfig.date.format("DD");
-      let dataJSON:any = <any>await d3.json(`https://3add8f553bcb.ngrok.io/data/timeseries/${prn}?year=${year}&month=${month}&day=${day}`);
+      let dataJSON:any = <any>await d3.json(`https://ad1b704a28c2.ngrok.io/data/timeseries/${prn}?year=${year}&month=${month}&day=${day}`);
       dataJSON = dataJSON.map((element:any)=>{
         let newElement = element
         newElement.epoch = new Date(element.epoch);
