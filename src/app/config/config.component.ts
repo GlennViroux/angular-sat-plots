@@ -32,23 +32,22 @@ export class ConfigComponent implements OnInit {
   isCollapsed: { [htmlId: string]: boolean } = {};
 
   constructor(private configService: ConfigService) {
-    d3.json<Promise<string[]>>("http://ad1b704a28c2.ngrok.io/stations")
+    d3.json<Promise<string[]>>("http://4e17896d9fed.ngrok.io/stations")
       .then((d: any) => {
         this.IgsStations = d;
-        d3.json<Promise<string[]>>("http://ad1b704a28c2.ngrok.io/prns")
+        d3.json<Promise<string[]>>("http://4e17896d9fed.ngrok.io/prns")
           .then((d: any) => {
             this.allSatellites = d.sort((n1: string, n2: string) => {
               if (n1 > n2) {
                 return 1;
               }
-
               if (n1 < n2) {
                 return -1;
               }
-
               return 0;
             });
             this.dataLoaded = true;
+            this.initialConfig();
           })
       });
 
@@ -58,14 +57,28 @@ export class ConfigComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  initialConfig(): void {
+    let newConfig = new Config();
+    newConfig.date = this.pickedDate;
+    newConfig.prns = ["E01","G01","C01","R01"];
+    newConfig.stations = [
+      "ABMF","ANTC","BIK0","BAKO","BREW","CEBR","CRAO","CZTG","DEAR","DRAG",
+      "FALK","DUND","GLPS","HKSL","HERT","MATG","MOIU","NANO","POVE","SBOK"
+  ]
+    this.checkConfig(newConfig);
   }
 
   private onlyUnique(value: any, index: any, self: any) {
     return self.indexOf(value) === index;
   }
 
-  async onSubmit(form: NgForm) {
+  onSubmit(form: NgForm) {
+    this.checkConfig();
+  }
+
+  async checkConfig(providedConfig:Config|null = null){
     this.submitLoading = true;
     this.invalidDate = false;
     this.noDataSats = [];
@@ -74,7 +87,11 @@ export class ConfigComponent implements OnInit {
     this.successfullUpload = false;
 
     //Check provided date
-    let checkData: any = await d3.json(`https://ad1b704a28c2.ngrok.io/check?year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
+    let myDate:any = this.pickedDate;
+    if (providedConfig){
+      myDate = providedConfig.date;
+    }
+    let checkData: any = await d3.json(`https://4e17896d9fed.ngrok.io/check?year=${myDate.format("YYYY")}&month=${myDate.format("MM")}&day=${myDate.format("DD")}`)
     if (!checkData.sat_points || !checkData.sat_track || !checkData.stations) {
       this.invalidDate = true;
       this.submitLoading = false;
@@ -82,7 +99,11 @@ export class ConfigComponent implements OnInit {
     }
 
     //Stations
-    let configuredStations = this.selectedOptions.concat(this.commaIgsStations.split(",").map((element: string) => element.toUpperCase()));
+    let myStations:string[] = this.selectedOptions.concat(this.commaIgsStations.split(",").map((element: string) => element.trim().toUpperCase()));
+    if (providedConfig){
+      myStations = providedConfig.stations;
+    }
+    let configuredStations = myStations;
     configuredStations = configuredStations.filter(this.onlyUnique);
 
     let foundStations: string[] = [];
@@ -96,7 +117,11 @@ export class ConfigComponent implements OnInit {
     this.invalidStations = foundStations;
 
     //Satellites
-    let configuredSatellites = this.selectedOptionsSats.concat(this.commaSats.split(",").map((element: string) => element.toUpperCase()));
+    let mySats:string[] = this.selectedOptionsSats.concat(this.commaSats.split(",").map((element: string) => element.trim().toUpperCase()));
+    if (providedConfig){
+      mySats = providedConfig.prns;
+    }
+    let configuredSatellites = mySats;
     configuredSatellites = configuredSatellites.filter(this.onlyUnique);
 
     let foundSats:string[] = [];
@@ -104,7 +129,7 @@ export class ConfigComponent implements OnInit {
     let satsCopy:string[] = [...configuredSatellites];
     for (let index=0;index<satsCopy.length;index++){
       let sat:string = satsCopy[index];
-      let checkData:any = await d3.json(`https://ad1b704a28c2.ngrok.io/check?sat=${sat}&year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
+      let checkData:any = await d3.json(`https://4e17896d9fed.ngrok.io/check?sat=${sat}&year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
       if (!sat) {
         let removeIndex:number = configuredSatellites.indexOf(sat);
         configuredSatellites.splice(removeIndex,1);

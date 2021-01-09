@@ -28,6 +28,7 @@ import { ProjectsDesktopComponent } from './projects/projects-desktop/projects-d
 import { AboutDesktopComponent } from './about/about-desktop/about-desktop.component';
 import { ExperienceDesktopComponent } from './experience/experience-desktop/experience-desktop.component';
 import { ContactDesktopComponent } from './contact/contact-desktop/contact-desktop.component';
+import { CreditsComponent } from './credits/credits.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { ContactDesktopComponent } from './contact/contact-desktop/contact-deskt
     ProjectsDesktopComponent,
     AboutDesktopComponent,
     ExperienceDesktopComponent,
-    ContactDesktopComponent
+    ContactDesktopComponent,
+    CreditsComponent
   ],
   imports: [
     BrowserModule,

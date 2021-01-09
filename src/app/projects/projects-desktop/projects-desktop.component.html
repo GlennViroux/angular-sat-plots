@@ -1,98 +1,97 @@
-<h1 id="projects-title">Projects</h1>
+<div id="projects-container">
+    <h1 id="projects-title">Projects</h1>
 
-<p style="font-size: larger;">
-    Here you can see some of the projects I've worked on in my spare time.
-</p>
-
-<div class="container">
-    <div class="row no-gutters my-5">
-        <div class="col-3">
-            <mdb-carousel [animation]="'slide'">
-                <mdb-carousel-item>
-                    <img class="d-block w-100" src="../../../assets/algotrading/algotrading1.jpg" alt="First slide">
-                </mdb-carousel-item>
-                <mdb-carousel-item>
-                    <img class="d-block w-100" src="../../../assets/algotrading/algotrading2.jpg" alt="Second slide">
-                </mdb-carousel-item>
-                <mdb-carousel-item>
-                    <img class="d-block w-100" src="../../../assets/algotrading/algotrading3.jpg" alt="Third slide">
-                </mdb-carousel-item>
-                <mdb-carousel-item>
-                    <img class="d-block w-100" src="../../../assets/algotrading/algotrading4.jpg" alt="Fourth slide">
-                </mdb-carousel-item>
-                <mdb-carousel-item>
-                    <img class="d-block w-100" src="../../../assets/algotrading/algotrading5.jpg" alt="Fifth slide">
-                </mdb-carousel-item>
-            </mdb-carousel>
+    <p style="font-size: larger;">
+        Here you can see some of the projects I've worked on in my spare time.
+    </p>
+    
+    <div class="container">
+        <div class="row no-gutters my-5">
+            <div class="col-3">
+                <mdb-carousel [animation]="'slide'">
+                    <mdb-carousel-item>
+                        <img class="d-block w-100" src="../../../assets/algotrading/algotrading1.jpg" alt="First slide">
+                    </mdb-carousel-item>
+                    <mdb-carousel-item>
+                        <img class="d-block w-100" src="../../../assets/algotrading/algotrading2.jpg" alt="Second slide">
+                    </mdb-carousel-item>
+                    <mdb-carousel-item>
+                        <img class="d-block w-100" src="../../../assets/algotrading/algotrading3.jpg" alt="Third slide">
+                    </mdb-carousel-item>
+                    <mdb-carousel-item>
+                        <img class="d-block w-100" src="../../../assets/algotrading/algotrading4.jpg" alt="Fourth slide">
+                    </mdb-carousel-item>
+                    <mdb-carousel-item>
+                        <img class="d-block w-100" src="../../../assets/algotrading/algotrading5.jpg" alt="Fifth slide">
+                    </mdb-carousel-item>
+                </mdb-carousel>
+            </div>
+            <div class="col-1" style="text-align: center;padding-top: 5px;">
+                <a class="external" href="https://github.com/GlennViroux/algoTrading" target="_blank"><i class="fas fa-external-link-alt fa-lg"></i></a>
+            </div>
+            <div class="col-8">
+                <h2>Algorithmic trading application</h2>
+                <p>
+                    A backend algorithmic trading program, joined by a frontend application in order to monitor the results
+                    and control basic and more advanced aspects of the trading algorithm.
+                </p>
+                <p>
+                    This program runs 100% automatically, buying and selling stocks on its own, but has added features to
+                    allow user input for various aspects of the algorithm.
+                </p>
+                <p>
+                    These are some of the techonologies used in this project:
+                </p>
+                <ul>
+                    <li>Python</li>
+                    <li>Dart</li>
+                    <li>Flutter</li>
+                    <li>Python Flask</li>
+                    <li>Yahoo Finance API</li>
+                </ul>
+            </div>
+    
         </div>
-        <div class="col-1" style="text-align: center;padding-top: 5px;">
-            <a class="external" href="https://github.com/GlennViroux/algoTrading" target="_blank"><i class="fas fa-external-link-alt fa-lg"></i></a>
+        <div class="row no-gutters my-5">
+            <div class="col-4">
+                <h2>GNSS satellite-station coverage simulator</h2>
+                <p>
+                    This is an animated and interactive simulator for GNSS satellite coverage by a network of IGS ground stations. 
+                    I.e., the simulator allows to configure any set of GNSS satellites and any set of IGS stations, visualizing which 
+                    stations have which satellites in sight at any point in time. 
+                </p>
+                <p>
+                    The final program is hosted on this site! Check it out for yourself <a [routerLink]="'/satplots'">here</a>.
+                </p>
+                <p>
+                    These are some of the techonologies used in this project:
+                </p>
+                <ul>
+                    <li>Javascript</li>
+                    <li>Angular</li>
+                    <li>D3JS</li>
+                    <li>Python Flask</li>
+                </ul>
+            </div>
+            <div class="col-1" style="text-align: center;padding-top: 5px;">
+                <a class="external" href="https://github.com/GlennViroux/angular-sat-plots" target="_blank"><i class="fas fa-external-link-alt fa-lg"></i></a>
+            </div>
+            <div class="col-7">
+                <mdb-carousel [animation]="'slide'">
+                    <mdb-carousel-item>
+                        <img class="d-block w-100" src="../../../assets/satPlots/satplots1.png" alt="First slide">
+                    </mdb-carousel-item>
+                    <mdb-carousel-item>
+                        <img class="d-block w-100" src="../../../assets/satPlots/satplots2.png" alt="Second slide">
+                    </mdb-carousel-item>
+                    <mdb-carousel-item>
+                        <img class="d-block w-100" src="../../../assets/satPlots/satplots3.png" alt="Third slide">
+                    </mdb-carousel-item>
+                    <mdb-carousel-item>
+                        <img class="d-block w-100" src="../../../assets/satPlots/satplots4.png" alt="Fourth slide">
+                    </mdb-carousel-item>
+                </mdb-carousel>
+            </div>
         </div>
-        <div class="col-8">
-            <h2>Algorithmic trading application</h2>
-            <p>
-                A backend algorithmic trading program, joined by a frontend application in order to monitor the results
-                and control basic and more advanced aspects of the trading algorithm.
-            </p>
-            <p>
-                This program runs 100% automatically, buying and selling stocks on its own, but has added features to
-                allow user input for various aspects of the algorithm.
-            </p>
-            <p>
-                These are some of the techonologies used in this project:
-            </p>
-            <ul>
-                <li>Python</li>
-                <li>Dart</li>
-                <li>Flutter</li>
-                <li>Python Flask</li>
-                <li>Yahoo Finance API</li>
-            </ul>
-        </div>
-
-    </div>
-    <div class="row no-gutters my-5">
-        <div class="col-4">
-            <h2>GNSS satellite-station coverage simulator</h2>
-            <p>
-                This is an animated and interactive simulator for GNSS satellite coverage by a network of IGS ground stations. 
-                I.e., the simulator allows to configure any set of GNSS satellites and any set of IGS stations, visualizing which 
-                stations have which satellites in sight at any point in time. 
-            </p>
-            <p>
-                The final program is hosted on this site! Check it out for yourself <a [routerLink]="'/satplots'">here</a>.
-            </p>
-            <p>
-                These are some of the techonologies used in this project:
-            </p>
-            <ul>
-                <li>Javascript</li>
-                <li>Angular</li>
-                <li>D3JS</li>
-                <li>Python Flask</li>
-            </ul>
-        </div>
-        <div class="col-1" style="text-align: center;padding-top: 5px;">
-            <a class="external" href="https://github.com/GlennViroux/angular-sat-plots" target="_blank"><i class="fas fa-external-link-alt fa-lg"></i></a>
-        </div>
-        <div class="col-7">
-            <mdb-carousel [animation]="'slide'">
-                <mdb-carousel-item>
-                    <img class="d-block w-100" src="../../../assets/satPlots/satplots1.png" alt="First slide">
-                </mdb-carousel-item>
-                <mdb-carousel-item>
-                    <img class="d-block w-100" src="../../../assets/satPlots/satplots2.png" alt="Second slide">
-                </mdb-carousel-item>
-                <mdb-carousel-item>
-                    <img class="d-block w-100" src="../../../assets/satPlots/satplots3.png" alt="Third slide">
-                </mdb-carousel-item>
-                <mdb-carousel-item>
-                    <img class="d-block w-100" src="../../../assets/satPlots/satplots4.png" alt="Fourth slide">
-                </mdb-carousel-item>
-
-            </mdb-carousel>
-        </div>
-
-
     </div>
 </div>

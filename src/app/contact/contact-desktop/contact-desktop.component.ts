@@ -16,7 +16,7 @@ export class ContactDesktopComponent implements OnInit {
   public errorMsg:string = "";
 
   public formData: FormGroup;
-  private mailApi: string = "https://ad1b704a28c2.ngrok.io/sendmail";
+  private mailApi: string = "https://4e17896d9fed.ngrok.io/sendmail";
 
   constructor(
     builder: FormBuilder,

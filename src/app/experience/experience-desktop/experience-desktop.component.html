@@ -1,136 +1,139 @@
 
-<h1 id="exp-title">Professional experience</h1>
+<div id="exp-container">
+    <h1 id="exp-title">Professional experience</h1>
 
-<p style="font-size: larger;">
-    Here you can see some of my professional experiences:
-</p>
-
-<div id="accordion">
-    <div class="card my-2">
-        <div class="card-header" id="headerGMV" data-toggle="collapse" data-target="#collapseGMV"
-            aria-expanded="false" aria-controls="collapseGMV"
-            (click)="isCollapsed['collapseGMV'] = !isCollapsed['collapseGMV']">
-            <div class="d-flex flex-row">
-                <h2 class="my-auto">
-                    GNSS Engineer - at <a href="https://www.gmv.com/en/" target="_blank">GMV</a>
-                </h2>
-                <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseGMV']">
-                    <i class="fas fa-chevron-down fa-lg"></i>
-                </span>
-                <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseGMV']">
-                    <i class="fas fa-chevron-up fa-lg"></i>
-                </span>
+    <p style="font-size: larger;">
+        Here you can see some of my professional experiences:
+    </p>
+    
+    <div id="accordion">
+        <div class="card my-2">
+            <div class="card-header" id="headerGMV" data-toggle="collapse" data-target="#collapseGMV"
+                aria-expanded="false" aria-controls="collapseGMV"
+                (click)="isCollapsed['collapseGMV'] = !isCollapsed['collapseGMV']">
+                <div class="d-flex flex-row">
+                    <h2 class="my-auto">
+                        GNSS Engineer - at <a href="https://www.gmv.com/en/" target="_blank">GMV</a>
+                    </h2>
+                    <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseGMV']">
+                        <i class="fas fa-chevron-down fa-lg"></i>
+                    </span>
+                    <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseGMV']">
+                        <i class="fas fa-chevron-up fa-lg"></i>
+                    </span>
+                </div>
+            </div>
+    
+            <div class="collapse" id="collapseGMV" aria-labelledby="headerGMV" data-parent="accordion"
+                [ngbCollapse]="!isCollapsed['collapseGMV']" aria-labelledby="headerGMV">
+                <div class="card-body">
+                    <h3>From October 2018 until now</h3>
+                    <p>
+                        Working as a software developer in the <a href="https://www.gsa.europa.eu/galileo-reference-center-grc" target="_blank">Galileo Reference Center (GRC)</a> project, 
+                        I am responsible for the development, integration, validation and evaluation of 
+                        certain modules in the software package. The GRC software aims to evaluate and 
+                        monitor the performance of the Galileo GNSS constellation, as well as the GPS, 
+                        Beidou and Glonass constellations.
+                    </p>
+                    <p>
+                        As a software developer in the GRC project, I combine both programming 
+                        skills with technical knowledge related to the content of the project. 
+                        Programming skills include knowledge of C++, Python and the linux operating 
+                        system structure. On the other side, also a good understanding of GNSS 
+                        timing performances, Precise Orbit Determination (POD), GNSS signals, 
+                        atmospheric effects and other related topics is crucial.
+                    </p>
+                    <p>
+                        Here are some of the techonologies I used during this experience:
+                    </p>
+                    <ul>
+                        <li>C++</li>
+                        <li>Python</li>
+                        <li>Linux</li>
+                    </ul>
+                </div>
             </div>
         </div>
-
-        <div class="collapse" id="collapseGMV" aria-labelledby="headerGMV" data-parent="accordion"
-            [ngbCollapse]="!isCollapsed['collapseGMV']" aria-labelledby="headerGMV">
-            <div class="card-body">
-                <h3>From October 2018 until now</h3>
-                <p>
-                    Working as a software developer in the <a href="https://www.gsa.europa.eu/galileo-reference-center-grc" target="_blank">Galileo Reference Center (GRC)</a> project, 
-                    I am responsible for the development, integration, validation and evaluation of 
-                    certain modules in the software package. The GRC software aims to evaluate and 
-                    monitor the performance of the Galileo GNSS constellation, as well as the GPS, 
-                    Beidou and Glonass constellations.
-                </p>
-                <p>
-                    As a software developer in the GRC project, I combine both programming 
-                    skills with technical knowledge related to the content of the project. 
-                    Programming skills include knowledge of C++, Python and the linux operating 
-                    system structure. On the other side, also a good understanding of GNSS 
-                    timing performances, Precise Orbit Determination (POD), GNSS signals, 
-                    atmospheric effects and other related topics is crucial.
-                </p>
-                <p>
-                    Here are some of the techonologies I used during this experience:
-                </p>
-                <ul>
-                    <li>C++</li>
-                    <li>Python</li>
-                    <li>Linux</li>
-                </ul>
+        <div class="card my-2">
+            <div class="card-header" id="headerESN" data-toggle="collapse" data-target="#collapseESN"
+                aria-expanded="false" aria-controls="collapseESN"
+                (click)="isCollapsed['collapseESN'] = !isCollapsed['collapseESN']">
+                <div class="d-flex flex-row">
+                    <h2 class="my-auto">
+                        Treasurer (volunteer) at <a href="https://esnucm.org/" target="_blank">Erasmus Student Network UCM</a>
+                    </h2>
+                    <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseESN']">
+                        <i class="fas fa-chevron-down fa-lg"></i>
+                    </span>
+                    <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseESN']">
+                        <i class="fas fa-chevron-up fa-lg"></i>
+                    </span>
+                </div>
+            </div>
+    
+            <div class="collapse" id="collapseESN" aria-labelledby="headerESN" data-parent="accordion"
+                [ngbCollapse]="!isCollapsed['collapseESN']" aria-labelledby="headerUpload">
+                <div class="card-body">
+                    <h3>From October 2019 until now</h3>
+                    <p>
+                        ESN (Erasmus Student Network) is an international student nonprofit organization. 
+                        We organize events of all kind for international students coming in from abroad to 
+                        study here in Madrid. Associated with the Complutense University of Madrid, the 
+                        organization ESN UCM consists of around 70 volunteers, receiving around 2500 students 
+                        per year and with an anual turnover of around €40000.
+                    </p>
+                    <p>
+                        As treasurer, I am the responsible in the organization for all financial transactions, 
+                        the accounting of all financial activities and declaraion of tax statements.
+                    </p>
+                    <p>
+                        Here are some of the techonologies I used during this experience:
+                    </p>
+                    <ul>
+                        <li>Microsoft Excel</li>
+                        <li>Python</li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="card my-2">
-        <div class="card-header" id="headerESN" data-toggle="collapse" data-target="#collapseESN"
-            aria-expanded="false" aria-controls="collapseESN"
-            (click)="isCollapsed['collapseESN'] = !isCollapsed['collapseESN']">
-            <div class="d-flex flex-row">
-                <h2 class="my-auto">
-                    Treasurer (volunteer) at <a href="https://esnucm.org/" target="_blank">Erasmus Student Network UCM</a>
-                </h2>
-                <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseESN']">
-                    <i class="fas fa-chevron-down fa-lg"></i>
-                </span>
-                <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseESN']">
-                    <i class="fas fa-chevron-up fa-lg"></i>
-                </span>
+        <div class="card my-2">
+            <div class="card-header" id="headerESA" data-toggle="collapse" data-target="#collapseESA"
+                aria-expanded="false" aria-controls="collapseESA"
+                (click)="isCollapsed['collapseESA'] = !isCollapsed['collapseESA']">
+                <div class="d-flex flex-row">
+                    <h2 class="my-auto">
+                        Master Thesis - in collaboration with <a href="https://www.esa.int/" target="_blank">ESA</a>
+                    </h2>
+                    <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseESA']">
+                        <i class="fas fa-chevron-down fa-lg"></i>
+                    </span>
+                    <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseESA']">
+                        <i class="fas fa-chevron-up fa-lg"></i>
+                    </span>
+                </div>
             </div>
-        </div>
-
-        <div class="collapse" id="collapseESN" aria-labelledby="headerESN" data-parent="accordion"
-            [ngbCollapse]="!isCollapsed['collapseESN']" aria-labelledby="headerUpload">
-            <div class="card-body">
-                <h3>From October 2019 until now</h3>
-                <p>
-                    ESN (Erasmus Student Network) is an international student nonprofit organization. 
-                    We organize events of all kind for international students coming in from abroad to 
-                    study here in Madrid. Associated with the Complutense University of Madrid, the 
-                    organization ESN UCM consists of around 70 volunteers, receiving around 2500 students 
-                    per year and with an anual turnover of around €40000.
-                </p>
-                <p>
-                    As treasurer, I am the responsible in the organization for all financial transactions, 
-                    the accounting of all financial activities and declaraion of tax statements.
-                </p>
-                <p>
-                    Here are some of the techonologies I used during this experience:
-                </p>
-                <ul>
-                    <li>Microsoft Excel</li>
-                    <li>Python</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="card my-2">
-        <div class="card-header" id="headerESA" data-toggle="collapse" data-target="#collapseESA"
-            aria-expanded="false" aria-controls="collapseESA"
-            (click)="isCollapsed['collapseESA'] = !isCollapsed['collapseESA']">
-            <div class="d-flex flex-row">
-                <h2 class="my-auto">
-                    Master Thesis - in collaboration with <a href="https://www.esa.int/" target="_blank">ESA</a>
-                </h2>
-                <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseESA']">
-                    <i class="fas fa-chevron-down fa-lg"></i>
-                </span>
-                <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseESA']">
-                    <i class="fas fa-chevron-up fa-lg"></i>
-                </span>
-            </div>
-        </div>
-
-        <div class="collapse" id="collapseESA" aria-labelledby="headerESA" data-parent="accordion"
-            [ngbCollapse]="!isCollapsed['collapseESA']" aria-labelledby="headerESA">
-            <div class="card-body">
-                <h3>From September 2017 until June 2018</h3>
-                <p>
-                    The objective of this thesis is to investigate the feasibility, advantages and challenges 
-                    of the application of Model Predictive Control to the attitude orientation of agile spacecraft. 
-                    For me, this is an extremely interesting topic and the perfect opportunity to combine all the 
-                    knowledge and skills I acquired during my academic career.
-                </p>
-                <p>
-                    Here are some of the techonologies I used during this experience:
-                </p>
-                <ul>
-                    <li>Matlab - Simulink</li>
-                    <li>Python</li>
-                    <li>qpOASES</li>
-                </ul>
+    
+            <div class="collapse" id="collapseESA" aria-labelledby="headerESA" data-parent="accordion"
+                [ngbCollapse]="!isCollapsed['collapseESA']" aria-labelledby="headerESA">
+                <div class="card-body">
+                    <h3>From September 2017 until June 2018</h3>
+                    <p>
+                        The objective of this thesis is to investigate the feasibility, advantages and challenges 
+                        of the application of Model Predictive Control to the attitude orientation of agile spacecraft. 
+                        For me, this is an extremely interesting topic and the perfect opportunity to combine all the 
+                        knowledge and skills I acquired during my academic career.
+                    </p>
+                    <p>
+                        Here are some of the techonologies I used during this experience:
+                    </p>
+                    <ul>
+                        <li>Matlab - Simulink</li>
+                        <li>Python</li>
+                        <li>qpOASES</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </div>
+

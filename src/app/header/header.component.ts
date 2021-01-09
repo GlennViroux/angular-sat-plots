@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { AppStateService } from '../services/app-state.service';
 
 @Component({
@@ -10,8 +10,20 @@ import { AppStateService } from '../services/app-state.service';
 export class HeaderComponent implements OnInit {
 
   public isCollapsed = false;
+  public showHeader = true;
 
-  constructor(private router:Router,public appStateService:AppStateService) { }
+  constructor(private router:Router,public appStateService:AppStateService) {
+    router.events.subscribe((val:any) => {
+      if (val instanceof NavigationEnd){
+        console.log(val.url);
+        if (val.url=="/satplots"){
+          this.showHeader = false;
+        } else {
+          this.showHeader = true;
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
   }

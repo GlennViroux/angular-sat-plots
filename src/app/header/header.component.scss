@@ -42,8 +42,8 @@ a{
 }
 
 #personal-logo{
-    height: 5vh;
-    width: 5vh;
+    height: 6vh;
+    width: 6vh;
     color: black;
     cursor: pointer;
     opacity: 0.4;
@@ -51,8 +51,11 @@ a{
 
 #personal-logo:hover{
     opacity: 1;
+    color: $mycolor;
+    transition: 0.2s;
 }
 
 .social-icons{
     padding-left: 3vw;
 }
+
