@@ -71,6 +71,7 @@ export class CoverageComponent implements OnInit {
     configService.configObservable.subscribe((newConfig:any)=>{
       this.plotConfig = newConfig;
       this.configPristine = false;
+      this.renderComplete = false;
       this.drawAll().then((_:any) => {
         configService.drawingComplete();
       });

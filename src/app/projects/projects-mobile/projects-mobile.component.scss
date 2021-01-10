@@ -1,0 +1,17 @@
+
+#projects-container {
+    min-height: 95vh;
+}
+#projects-title {
+    text-align: center;
+    margin-top: 5vh;
+}
+
+.external {
+    opacity: 0.3;
+}
+
+.external:hover{
+    opacity: 1;
+    color: black;
+}

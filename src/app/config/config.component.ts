@@ -26,7 +26,7 @@ export class ConfigComponent implements OnInit {
   noDataSats:string[] = [];
   invalidDate: boolean = false;
   successfullUpload: boolean = false;
-  pickedDate: any = moment().subtract(1, 'days');
+  pickedDate: any = moment().subtract(2, 'days');
 
   submitLoading: boolean = false;
   isCollapsed: { [htmlId: string]: boolean } = {};

@@ -1,3 +1,4 @@
+@import '../../../assets/styles/constants.scss';
 
 #about-container {
     min-height: 95vh;
@@ -12,6 +13,7 @@
     margin-top: 5vh;
 }
 
+/*
 #personal-image{
     width: 100%;
     border-radius: 5%;
@@ -27,4 +29,57 @@
     transform: scale(1.05);
     box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
     transition: 0.3s;
+}
+
+:host {
+    display: flex;
+    perspective: 600px;
+}
+
+*/
+
+.mycard {
+    display: flex;
+    box-shadow: 10px 10px 43px -18px rgba(0, 0, 0, 0.75);
+    border-radius: 10px;
+    width: 100%;
+    cursor: pointer;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.front {
+    display: block;
+    position: absolute;
+    //width: 100%;
+    //height: 100%;
+    border-radius: inherit;
+    backface-visibility: hidden;
+
+    > img {
+        width: 100%;
+        height: 100%;
+        //object-fit: cover;
+        border-radius: inherit;
+    }
+
+    /*
+    > img:hover {
+        transform: scale(1.05);
+        transition: 0.2s;
+    }
+    */
+}
+
+.back {
+    height: 100%;
+    width: 100%;
+    border-radius: inherit;
+    transform: rotateY(180deg);
+    background-color:grey;
+}
+
+.back-image-text{
+    font-size: large;
+    color: white;
 }

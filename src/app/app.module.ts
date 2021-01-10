@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 import { CarouselModule, WavesModule } from 'angular-bootstrap-md';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { CoverageComponent } from './coverage/coverage.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -29,6 +30,11 @@ import { AboutDesktopComponent } from './about/about-desktop/about-desktop.compo
 import { ExperienceDesktopComponent } from './experience/experience-desktop/experience-desktop.component';
 import { ContactDesktopComponent } from './contact/contact-desktop/contact-desktop.component';
 import { CreditsComponent } from './credits/credits.component';
+import { ProjectsMobileComponent } from './projects/projects-mobile/projects-mobile.component';
+import { SatplotsMobileComponent } from './satplots/satplots-mobile/satplots-mobile.component';
+import { ExperienceMobileComponent } from './experience/experience-mobile/experience-mobile.component';
+import { ContactMobileComponent } from './contact/contact-mobile/contact-mobile.component';
+import { AboutMobileComponent } from './about/about-mobile/about-mobile.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +49,12 @@ import { CreditsComponent } from './credits/credits.component';
     AboutDesktopComponent,
     ExperienceDesktopComponent,
     ContactDesktopComponent,
-    CreditsComponent
+    CreditsComponent,
+    ProjectsMobileComponent,
+    SatplotsMobileComponent,
+    ExperienceMobileComponent,
+    ContactMobileComponent,
+    AboutMobileComponent
   ],
   imports: [
     BrowserModule,
@@ -62,7 +73,8 @@ import { CreditsComponent } from './credits/credits.component';
     MatIconModule,
     HttpClientModule,
     CarouselModule,
-    WavesModule
+    WavesModule,
+    MatProgressBarModule
   ],
   providers: [MatDatepickerModule],
   bootstrap: [AppComponent]

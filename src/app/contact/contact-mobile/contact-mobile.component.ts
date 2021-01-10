@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-contact-desktop',
-  templateUrl: './contact-desktop.component.html',
-  styleUrls: ['./contact-desktop.component.scss']
+  selector: 'app-contact-mobile',
+  templateUrl: './contact-mobile.component.html',
+  styleUrls: ['./contact-mobile.component.scss']
 })
-export class ContactDesktopComponent implements OnInit {
+export class ContactMobileComponent implements OnInit {
 
   public submitLoading:boolean = false;
   public showSuccessMsg:boolean = false;
@@ -34,7 +34,7 @@ export class ContactDesktopComponent implements OnInit {
     return this.http.post(this.mailApi, input)
       .pipe(
         map(
-          (response) => {
+          (response:any) => {
             return response;
           },
           (error: any) => {
@@ -48,7 +48,7 @@ export class ContactDesktopComponent implements OnInit {
     this.submitLoading = true;
     this.postMessage(formData)
       .subscribe(
-        (response:any) => {
+        (response) => {
           this.submitLoading = false;
           if (response){
             this.showSuccessMsg = true;
