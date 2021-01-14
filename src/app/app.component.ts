@@ -16,5 +16,9 @@ export class AppComponent {
       'personal-logo',
       sanitizer.bypassSecurityTrustResourceUrl('./assets/gv_logo.svg')
     );
+    iconRegistry.addSvgIcon(
+      'welcome-svg',
+      sanitizer.bypassSecurityTrustResourceUrl('./assets/welcome.svg')
+    );
   }
 }

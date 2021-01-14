@@ -6,6 +6,8 @@ import { Config } from '../config';
 import * as d3 from "d3";
 import * as moment from 'moment';
 import { ConfigService } from '../services/config.service';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-config',
@@ -14,6 +16,7 @@ import { ConfigService } from '../services/config.service';
 })
 export class ConfigComponent implements OnInit {
 
+  serverUp:boolean = true;
   dataLoaded: boolean = false;
   IgsStations: string[] = [];
   allSatellites: string[] = [];
@@ -23,7 +26,7 @@ export class ConfigComponent implements OnInit {
   commaSats: string = "";
   invalidStations: string[] = [];
   invalidSats: string[] = [];
-  noDataSats:string[] = [];
+  noDataSats: string[] = [];
   invalidDate: boolean = false;
   successfullUpload: boolean = false;
   pickedDate: any = moment().subtract(2, 'days');
@@ -31,25 +34,35 @@ export class ConfigComponent implements OnInit {
   submitLoading: boolean = false;
   isCollapsed: { [htmlId: string]: boolean } = {};
 
-  constructor(private configService: ConfigService) {
-    d3.json<Promise<string[]>>("http://4e17896d9fed.ngrok.io/stations")
+  constructor(private configService: ConfigService, http: HttpClient) {
+    http.get("https://4e17896d9fed.ngrok.io/servercheck")
+    .toPromise()
+    .then((_:any) => {
+      d3.json<Promise<string[]>>("https://4e17896d9fed.ngrok.io/stations")
       .then((d: any) => {
         this.IgsStations = d;
-        d3.json<Promise<string[]>>("http://4e17896d9fed.ngrok.io/prns")
-          .then((d: any) => {
-            this.allSatellites = d.sort((n1: string, n2: string) => {
-              if (n1 > n2) {
-                return 1;
-              }
-              if (n1 < n2) {
-                return -1;
-              }
-              return 0;
-            });
-            this.dataLoaded = true;
-            this.initialConfig();
-          })
-      });
+        d3.json<Promise<string[]>>("https://4e17896d9fed.ngrok.io/prns")
+        .then((d: any) => {
+          this.allSatellites = d.sort((n1: string, n2: string) => {
+            if (n1 > n2) {
+              return 1;
+            }
+            if (n1 < n2) {
+              return -1;
+            }
+            return 0;
+          });
+          this.dataLoaded = true;
+          this.initialConfig();
+        })
+    });
+    })
+    .catch((_:any) => {
+      this.serverUp = false;
+      this.configService.submitServerInfo(false);
+    });
+
+
 
     configService.drawingObservable.subscribe((_: boolean) => {
       this.submitLoading = false;
@@ -57,16 +70,16 @@ export class ConfigComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   initialConfig(): void {
     let newConfig = new Config();
     newConfig.date = this.pickedDate;
-    newConfig.prns = ["E01","G01","C01","R01"];
+    newConfig.prns = ["E01", "G01", "C01", "R01"];
     newConfig.stations = [
-      "ABMF","ANTC","BIK0","BAKO","BREW","CEBR","CRAO","CZTG","DEAR","DRAG",
-      "FALK","DUND","GLPS","HKSL","HERT","MATG","MOIU","NANO","POVE","SBOK"
-  ]
+      "ABMF", "ANTC", "BIK0", "BAKO", "BREW", "CEBR", "CRAO", "CZTG", "DEAR", "DRAG",
+      "FALK", "DUND", "GLPS", "HKSL", "HERT", "MATG", "MOIU", "NANO", "POVE", "SBOK"
+    ]
     this.checkConfig(newConfig);
   }
 
@@ -78,7 +91,7 @@ export class ConfigComponent implements OnInit {
     this.checkConfig();
   }
 
-  async checkConfig(providedConfig:Config|null = null){
+  async checkConfig(providedConfig: Config | null = null) {
     this.submitLoading = true;
     this.invalidDate = false;
     this.noDataSats = [];
@@ -87,8 +100,8 @@ export class ConfigComponent implements OnInit {
     this.successfullUpload = false;
 
     //Check provided date
-    let myDate:any = this.pickedDate;
-    if (providedConfig){
+    let myDate: any = this.pickedDate;
+    if (providedConfig) {
       myDate = providedConfig.date;
     }
     let checkData: any = await d3.json(`https://4e17896d9fed.ngrok.io/check?year=${myDate.format("YYYY")}&month=${myDate.format("MM")}&day=${myDate.format("DD")}`)
@@ -99,8 +112,8 @@ export class ConfigComponent implements OnInit {
     }
 
     //Stations
-    let myStations:string[] = this.selectedOptions.concat(this.commaIgsStations.split(",").map((element: string) => element.trim().toUpperCase()));
-    if (providedConfig){
+    let myStations: string[] = this.selectedOptions.concat(this.commaIgsStations.split(",").map((element: string) => element.trim().toUpperCase()));
+    if (providedConfig) {
       myStations = providedConfig.stations;
     }
     let configuredStations = myStations;
@@ -117,30 +130,30 @@ export class ConfigComponent implements OnInit {
     this.invalidStations = foundStations;
 
     //Satellites
-    let mySats:string[] = this.selectedOptionsSats.concat(this.commaSats.split(",").map((element: string) => element.trim().toUpperCase()));
-    if (providedConfig){
+    let mySats: string[] = this.selectedOptionsSats.concat(this.commaSats.split(",").map((element: string) => element.trim().toUpperCase()));
+    if (providedConfig) {
       mySats = providedConfig.prns;
     }
     let configuredSatellites = mySats;
     configuredSatellites = configuredSatellites.filter(this.onlyUnique);
 
-    let foundSats:string[] = [];
-    let foundNoDataSats:string[] = [];
-    let satsCopy:string[] = [...configuredSatellites];
-    for (let index=0;index<satsCopy.length;index++){
-      let sat:string = satsCopy[index];
-      let checkData:any = await d3.json(`https://4e17896d9fed.ngrok.io/check?sat=${sat}&year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
+    let foundSats: string[] = [];
+    let foundNoDataSats: string[] = [];
+    let satsCopy: string[] = [...configuredSatellites];
+    for (let index = 0; index < satsCopy.length; index++) {
+      let sat: string = satsCopy[index];
+      let checkData: any = await d3.json(`https://4e17896d9fed.ngrok.io/check?sat=${sat}&year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
       if (!sat) {
-        let removeIndex:number = configuredSatellites.indexOf(sat);
-        configuredSatellites.splice(removeIndex,1);
+        let removeIndex: number = configuredSatellites.indexOf(sat);
+        configuredSatellites.splice(removeIndex, 1);
       } else if (this.allSatellites.indexOf(sat) <= -1) {
         foundSats.push(sat);
-        let removeIndex:number = configuredSatellites.indexOf(sat);
-        configuredSatellites.splice(removeIndex,1);
+        let removeIndex: number = configuredSatellites.indexOf(sat);
+        configuredSatellites.splice(removeIndex, 1);
       } else if (!checkData.sat_points || !checkData.sat_track || !checkData.stations) {
         foundNoDataSats.push(sat);
-        let removeIndex:number = configuredSatellites.indexOf(sat);
-        configuredSatellites.splice(removeIndex,1);
+        let removeIndex: number = configuredSatellites.indexOf(sat);
+        configuredSatellites.splice(removeIndex, 1);
       }
     }
 
@@ -193,7 +206,7 @@ export class ConfigComponent implements OnInit {
     this.selectedOptionsSats = [];
   }
 
-  filterSats(sats:string[],indicator:string){
-    return sats.filter((sat:string) => sat.startsWith(indicator));
+  filterSats(sats: string[], indicator: string) {
+    return sats.filter((sat: string) => sat.startsWith(indicator));
   }
 }

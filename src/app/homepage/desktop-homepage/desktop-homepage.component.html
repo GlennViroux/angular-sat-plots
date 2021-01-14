@@ -1,16 +1,54 @@
-
 <div id="main-cont">
-    <h1 style="font-size: xx-large;">Welcome!</h1>
+    <!--<mat-icon id="welcome-svg" svgIcon="welcome-svg"></mat-icon>-->
+    <h1 class="ml-5" id="welcome-title">WELCOME!</h1>
+
     <br><br>
-    <p style="font-size: larger;">
-        My name is Glenn Viroux, I'm a software engineer from Belgium, 
-        currently living and working in Madrid.
-    </p>
-    <br>
-    <p style="font-size: larger;">
-        This website serves as a small summary of my portfolio and to show some of 
-        the stuff I've made recently. However, it also serves as a hosting place for 
-        some of my personal projects. Head over to <a [routerLink]="'/projects'">this section</a> to check 
+    <p style="font-size: larger;" class="mx-5">
+        This website serves as a small summary of my portfolio and to show some of
+        the stuff I've made recently. However, it also serves as a hosting place for
+        some of my personal projects. Head over to <a [routerLink]="'/projects'">this section</a> to check
         them out!
     </p>
+    <br><br>
+    <div *ngIf="dataLoaded">
+        <div id="main-image-cont" (mouseenter)="apodEnter()" (mouseleave)="apodLeave()">
+            <img id="main-image-foto" src="{{apod_url}}" [@showHideImage]="showInfoState">
+            <div id="main-image-text" [@showHide]="showInfoState">
+                <h2>{{apod_json['title']}}</h2>
+                <h3>{{selectedDate.format('YYYY/MM/DD')}}</h3>
+                <p>{{apod_json['explanation']}}</p>
+                <div *ngIf="apod_json['copyright']">
+                    <p><i class="far fa-copyright"></i> {{apod_json['copyright']}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-row">
+            <p class="mr-auto mt-1">
+                <a (click)="toggleText()" matTooltip="Why this image?"><i class="far fa-question-circle fa-lg"></i></a>
+            </p>
+        </div>
+        <div id="why-text" [@showHide]="showInfoText">
+            <h3>Why this image?</h3>
+            <p>
+                The image shown here is NASA's Astronomy Picture Of the Day, coming straight from their <a
+                    href="https://apod.nasa.gov/apod/astropix.html" target="_blank">site</a>. Since June 1995 (around
+                the time I was born), they started uploading one image per day concerning some space / astronomy related
+                topic. I really like the images, and find the project in general really cool, so that's why they are
+                ending
+                up here :)
+            </p>
+            <h4>Want to see other images?</h4>
+            <p>You can choose here to show the image for another date!</p>
+            <mat-form-field appearance="outline">
+                <mat-label>Select date</mat-label>
+                <mat-select [(value)]="selectedDateStr" (selectionChange)="selectDate()">
+                    <mat-option *ngFor="let date of allDates" value="{{date}}">
+                        {{date}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+    </div>
+
 </div>

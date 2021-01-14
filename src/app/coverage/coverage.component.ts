@@ -12,6 +12,7 @@ import { ConfigService } from '../services/config.service';
 })
 export class CoverageComponent implements OnInit {
 
+  serverUp:boolean = true;
   plotConfig:Config = new Config();
   renderComplete:boolean = false;
   configPristine:boolean = true;
@@ -75,7 +76,10 @@ export class CoverageComponent implements OnInit {
       this.drawAll().then((_:any) => {
         configService.drawingComplete();
       });
-      
+    });
+
+    configService.serverObservable.subscribe((newServerInfo:boolean) => {
+      this.serverUp = newServerInfo;
     })
     
   }

@@ -30,7 +30,7 @@ a{
     bottom: 0;
     left: 0;
     height: 2px;
-    background-color:$mycolor;
+    background-color: $mybluecolor;
     width: 0%;
     transition: 0.4s;
 }
@@ -51,7 +51,7 @@ a{
 
 #personal-logo:hover{
     opacity: 1;
-    color: $mycolor;
+    color: $mybluecolor;
     transition: 0.2s;
 }
 

@@ -9,11 +9,11 @@ a {
     cursor: pointer;
     color: black;
     text-decoration: underline;
-    text-decoration-color: $mycolor;
+    text-decoration-color: $mybluecolor;
 }
 
 a:hover {
-    color: $mycolor;
+    color: $mybluecolor;
     text-decoration: none;
     transition: 0.4s;
 }

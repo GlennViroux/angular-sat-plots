@@ -1,417 +1,426 @@
 
-<p>
-    This animated tool provides you with an easy method to see which GNSS satellite had which ground stations 
-    in view at any moment in time. You can personalize the configuration by selecting the ground stations and 
-    GNSS satellites to include in the visualization plots.
-</p>
-<p>
-    Results are generated using satellite orbit information from <a href="https://celestrak.com/" target="_blank">Celestrak</a>.
-</p>
-<div class="card mt-2 mb-5">
-    <div class="card-header" id="headerConfig" data-toggle="collapse"
-        data-target="#collapseConfig" aria-expanded="false"
-        aria-controls="collapseConfig"
-        (click)="isCollapsed['collapseConfig'] = !isCollapsed['collapseConfig']">
-        <div class="d-flex flex-row">
-            <h2 class="my-auto">
-                Edit configuration
-            </h2>
-            <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseConfig']">
-                <i class="fas fa-chevron-down fa-lg"></i>
-            </span>
-            <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseConfig']">
-                <i class="fas fa-chevron-up fa-lg"></i>
-            </span>
-        </div>
-    </div>
-
-    <div class="collapse" id="collapseConfig" aria-labelledby="headerConfig"
-        data-parent="accordion" [ngbCollapse]="!isCollapsed['collapseConfig']"
-        aria-labelledby="headerConfig">
-        <div class="card-body">
-            <div *ngIf="dataLoaded else loading">
-                <form (ngSubmit)="onSubmit(configForm)" #configForm="ngForm">
-                    <div class="form-group">
-                        <h4>Select date:</h4>
-                        <mat-form-field appearance="outline">
-                            <mat-label>Choose a date</mat-label>
-                            <input matInput [matDatepicker]="picker" [(ngModel)]="pickedDate" name="mydate" #mydate="ngModel">
-                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-datepicker #picker></mat-datepicker>
-                        </mat-form-field>
-                    </div>
-        
-                    <div class="form-group">
-                        <h4>Select stations:</h4>
-                        <div id="accordion">
-                            <div class="card mb-1">
-                                <div class="card-header" id="headerIgsComma" data-toggle="collapse"
-                                    data-target="#collapseIgsComma" aria-expanded="false"
-                                    aria-controls="collapseIgsComma"
-                                    (click)="isCollapsed['collapseIgsComma'] = !isCollapsed['collapseIgsComma']">
-                                    <div class="d-flex flex-row">
-                                        <h3 class="my-auto">
-                                            Manually provide list of IGS stations
-                                        </h3>
-                                        <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseIgsComma']">
-                                            <i class="fas fa-chevron-down fa-lg"></i>
-                                        </span>
-                                        <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseIgsComma']">
-                                            <i class="fas fa-chevron-up fa-lg"></i>
-                                        </span>
-                                    </div>
-                                </div>
-        
-                                <div class="collapse" id="collapseIgsComma" aria-labelledby="headerIgsComma"
-                                    data-parent="accordion" [ngbCollapse]="!isCollapsed['collapseIgsComma']"
-                                    aria-labelledby="headerIgsComma">
-                                    <div class="card-body">
-                                        <p>Provide, as a comma separated list, the IGS stations you'd like to
-                                            configure.
-                                        </p>
-                                        <p>E.g.: <i>ABMF,IENG,ZAMB,YEL2</i></p>
-                                        <textarea class="form-control" [(ngModel)]="commaIgsStations" #mylist
-                                            name="mylist"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card mb-1">
-                                <div class="card-header" id="headerIgsStations" data-toggle="collapse"
-                                    data-target="#collapseIgsStations" aria-expanded="false"
-                                    aria-controls="collapseIgsStations"
-                                    (click)="isCollapsed['collapseIgsStations'] = !isCollapsed['collapseIgsStations']">
-                                    <div class="d-flex flex-row">
-                                        <h3 class="my-auto">
-                                            Select from list of available IGS stations
-                                        </h3>
-                                        <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseIgsStations']">
-                                            <i class="fas fa-chevron-down fa-lg"></i>
-                                        </span>
-                                        <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseIgsStations']">
-                                            <i class="fas fa-chevron-up fa-lg"></i>
-                                        </span>
-                                    </div>
-                                </div>
-        
-                                <div class="collapse" id="collapseIgsStations" aria-labelledby="headerIgsStations"
-                                    data-parent="accordion" [ngbCollapse]="!isCollapsed['collapseIgsStations']"
-                                    aria-labelledby="headerIgsStations">
-                                    <div class="card-body">
-                                        <p>Make a selection from these IGS stations:</p>
-                                        <div class="d-flex flex-row">
-        
-                                            <button type="button" class="btn btn-outline-info mx-2"
-                                                (click)="selectAllStations()">Select all</button>
-        
-                                            <button type="button" class="btn btn-outline-danger mx-2"
-                                                (click)="clearAllStations()">Clear all</button>
-                                        </div>
-                                        <mat-selection-list #list [(ngModel)]="selectedOptions" name="list">
-                                            <div class="wrapper">
-                                                <mat-list-option *ngFor="let station of IgsStations"
-                                                    [value]="station">
-                                                    {{station}}
-                                                </mat-list-option>
-                                            </div>
-                                        </mat-selection-list>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <div *ngIf="invalidStations.length>=1">
-                        <div class="alert alert-warning my-2" role="alert">
-                            <div class="d-flex flex-row">
-                                <div class="flex-column">
-                                    <div class="ml-1">
-                                        <strong>Warning</strong>: the following stations were not found:
-                                    </div>
-                                    <div class="ml-1" *ngFor="let station of invalidStations">
-                                        {{station}}
-                                    </div>
-                                </div>
-                                <button type="button" class="close mb-auto ml-auto" aria-label="Close"
-                                    (click)="removeErrorMsg('stations')">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <div class="form-group">
-                        <h4>Select satellites:</h4>
-                        <div id="accordion">
-                            <div class="card mb-1">
-                                <div class="card-header" id="headerSatsComma" data-toggle="collapse"
-                                    data-target="#collapseSatsComma" aria-expanded="false" aria-controls="collapseSatsComma"
-                                    (click)="isCollapsed['collapseSatsComma'] = !isCollapsed['collapseSatsComma']">
-                                    <div class="d-flex flex-row">
-                                        <h3 class="my-auto">
-                                            Manually provide list of satellites
-                                        </h3>
-                                        <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseSatsComma']">
-                                            <i class="fas fa-chevron-down fa-lg"></i>
-                                        </span>
-                                        <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseSatsComma']">
-                                            <i class="fas fa-chevron-up fa-lg"></i>
-                                        </span>
-                                    </div>
-                                </div>
-        
-                                <div class="collapse" id="collapseIgsComma" aria-labelledby="headerSatsComma"
-                                    data-parent="accordion" [ngbCollapse]="!isCollapsed['collapseSatsComma']"
-                                    aria-labelledby="headerSatsComma">
-                                    <div class="card-body">
-                                        <p>Provide, as a comma separated list, the satellites you'd like to configure.</p>
-                                        <textarea class="form-control" [(ngModel)]="commaSats" #mylist name="mylist"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card mb-1">
-                                <div class="card-header" id="headerSats" data-toggle="collapse" data-target="#collapseSats"
-                                    aria-expanded="false" aria-controls="collapseSats"
-                                    (click)="isCollapsed['collapseSats'] = !isCollapsed['collapseSats']">
-                                    <div class="d-flex flex-row">
-                                        <h3 class="my-auto">
-                                            Select from list of available satellites
-                                        </h3>
-                                        <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseSats']">
-                                            <i class="fas fa-chevron-down fa-lg"></i>
-                                        </span>
-                                        <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseSats']">
-                                            <i class="fas fa-chevron-up fa-lg"></i>
-                                        </span>
-                                    </div>
-                                </div>
-        
-                                <div class="collapse" id="collapseSats" aria-labelledby="headerSats" data-parent="accordion"
-                                    [ngbCollapse]="!isCollapsed['collapseSats']" aria-labelledby="headerSats">
-                                    <div class="card-body">
-                                        <p>Make a selection from these satellites:</p>
-                                        <div class="d-flex flex-row">
-                                            <button type="button" class="btn btn-outline-info mx-2"
-                                                (click)="selectAllSats('galileo')">Galileo</button>
-                                            <button type="button" class="btn btn-outline-info mx-2"
-                                                (click)="selectAllSats('GPS')">GPS</button>
-                                            <button type="button" class="btn btn-outline-info mx-2"
-                                                (click)="selectAllSats('glonass')">Glonass</button>
-                                            <button type="button" class="btn btn-outline-info mx-2"
-                                                (click)="selectAllSats('beidou')">BeiDou</button>
-                                            <button type="button" class="btn btn-outline-danger mx-2"
-                                                (click)="clearAllSats()">Clear all</button>
-                                        </div>
-                                        <mat-selection-list #list [(ngModel)]="selectedOptionsSats" name="list">
-                                            <div class="card mb-1">
-                                                <div class="card-header" id="headerGalSats" data-toggle="collapse"
-                                                    data-target="#collapseGalSats" aria-expanded="false"
-                                                    aria-controls="collapseGalSats"
-                                                    (click)="isCollapsed['collapseGalSats'] = !isCollapsed['collapseGalSats']">
-                                                    <div class="d-flex flex-row">
-                                                        <h3 class="my-auto">
-                                                            Galileo Satellites
-                                                        </h3>
-                                                        <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseGalSats']">
-                                                            <i class="fas fa-chevron-down fa-lg"></i>
-                                                        </span>
-                                                        <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseGalSats']">
-                                                            <i class="fas fa-chevron-up fa-lg"></i>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div id="collapseGalSats" [ngbCollapse]="!isCollapsed['collapseGalSats']">
-                                                    <div class="card-body">
-                                                        <div class="wrapper">
-                                                            <mat-list-option
-                                                                *ngFor="let satellite of filterSats(allSatellites,'E')"
-                                                                [value]="satellite">
-                                                                {{satellite}}
-                                                            </mat-list-option>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card mb-1">
-                                                <div class="card-header" id="headerGPSSats" data-toggle="collapse"
-                                                    data-target="#collapseGPSSats" aria-expanded="false"
-                                                    aria-controls="collapseGPSSats"
-                                                    (click)="isCollapsed['collapseGPSSats'] = !isCollapsed['collapseGPSSats']">
-                                                    <div class="d-flex flex-row">
-                                                        <h3 class="my-auto">
-                                                            GPS Satellites
-                                                        </h3>
-                                                        <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseGPSSats']">
-                                                            <i class="fas fa-chevron-down fa-lg"></i>
-                                                        </span>
-                                                        <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseGPSSats']">
-                                                            <i class="fas fa-chevron-up fa-lg"></i>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div id="collapseGPSSats" [ngbCollapse]="!isCollapsed['collapseGPSSats']">
-                                                    <div class="card-body">
-                                                        <div class="wrapper">
-                                                            <mat-list-option
-                                                                *ngFor="let satellite of filterSats(allSatellites,'G')"
-                                                                [value]="satellite">
-                                                                {{satellite}}
-                                                            </mat-list-option>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card mb-1">
-                                                <div class="card-header" id="headerGloSats" data-toggle="collapse"
-                                                    data-target="#collapseGloSats" aria-expanded="false"
-                                                    aria-controls="collapseGloSats"
-                                                    (click)="isCollapsed['collapseGloSats'] = !isCollapsed['collapseGloSats']">
-                                                    <div class="d-flex flex-row">
-                                                        <h3 class="my-auto">
-                                                            Glonass Satellites
-                                                        </h3>
-                                                        <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseGloSats']">
-                                                            <i class="fas fa-chevron-down fa-lg"></i>
-                                                        </span>
-                                                        <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseGloSats']">
-                                                            <i class="fas fa-chevron-up fa-lg"></i>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div id="collapseGloSats" [ngbCollapse]="!isCollapsed['collapseGloSats']">
-                                                    <div class="card-body">
-                                                        <div class="wrapper">
-                                                            <mat-list-option
-                                                                *ngFor="let satellite of filterSats(allSatellites,'R')"
-                                                                [value]="satellite">
-                                                                {{satellite}}
-                                                            </mat-list-option>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card mb-1">
-                                                <div class="card-header" id="headerBeiSats" data-toggle="collapse"
-                                                    data-target="#collapseBeiSats" aria-expanded="false"
-                                                    aria-controls="collapseBeiSats"
-                                                    (click)="isCollapsed['collapseBeiSats'] = !isCollapsed['collapseBeiSats']">
-                                                    <div class="d-flex flex-row">
-                                                        <h3 class="my-auto">
-                                                            BeiDou Satellites
-                                                        </h3>
-                                                        <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseBeiSats']">
-                                                            <i class="fas fa-chevron-down fa-lg"></i>
-                                                        </span>
-                                                        <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseBeiSats']">
-                                                            <i class="fas fa-chevron-up fa-lg"></i>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div id="collapseBeiSats" [ngbCollapse]="!isCollapsed['collapseBeiSats']">
-                                                    <div class="card-body">
-                                                        <div class="wrapper">
-                                                            <mat-list-option
-                                                                *ngFor="let satellite of filterSats(allSatellites,'C')"
-                                                                [value]="satellite">
-                                                                {{satellite}}
-                                                            </mat-list-option>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </mat-selection-list>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <div *ngIf="invalidSats.length>=1">
-                        <div class="alert alert-warning my-2" role="alert">
-                            <div class="d-flex flex-row">
-                                <div class="flex-column">
-                                    <div class="pl-1 my-auto">
-                                        <strong>Warning</strong>: the following satellites were not found:
-                                    </div>
-                                    <div class="ml-1" *ngFor="let sat of invalidSats">
-                                        {{sat}}
-                                    </div>
-                                </div>
-                                <button type="button" class="close mb-auto ml-auto" aria-label="Close"
-                                    (click)="removeErrorMsg('sats')">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <div *ngIf="noDataSats.length>=1">
-                        <div class="alert alert-warning my-2" role="alert">
-                            <div class="d-flex flex-row">
-                                <div class="flex-column">
-                                    <div class="pl-1 my-auto">
-                                        <strong>Warning</strong>: no data was found for the following satellites on the provided
-                                        date:
-                                    </div>
-                                    <div class="ml-1" *ngFor="let sat of noDataSats">
-                                        {{sat}}
-                                    </div>
-                                </div>
-                                <button type="button" class="close mb-auto ml-auto" aria-label="Close"
-                                    (click)="removeErrorMsg('noDataSats')">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <div *ngIf="invalidDate">
-                        <div class="alert alert-danger my-2" role="alert">
-                            <div class="d-flex flex-row">
-                                <p class="pr-2 my-auto">
-                                    No data was found for the provided date.
-                                    Please provide a different date, knowing
-                                    that no data is available before 2020/01
-                                    and that the products are calculated with
-                                    a latency of 1 day.
-                                </p>
-                                <button type="button" class="close mb-auto ml-auto" aria-label="Close"
-                                    (click)="removeErrorMsg('date')">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <div *ngIf="successfullUpload">
-                        <div class="alert alert-success my-2" role="alert">
-                            <div class="d-flex flex-row">
-                                <p class="pr-2 my-auto">
-                                    All plots rendered with success!
-                                </p>
-                                <button type="button" class="close mb-auto ml-auto" aria-label="Close"
-                                    (click)="removeErrorMsg('success')">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <button type="submit" class="btn btn-success" [disabled]="!configForm.form.valid">
-                        <div *ngIf="submitLoading">
-                            Rendering plots
-                            <span class="spinner-border spinner-border-sm mr-1"></span>
-                        </div>
-                        <span *ngIf="!submitLoading">Confirm</span>
-                    </button>
-        
-                </form>
+<div *ngIf="serverUp">
+    <p>
+        This animated tool provides you with an easy method to see which GNSS satellite had which ground stations 
+        in view at any moment in time. You can personalize the configuration by selecting the ground stations and 
+        GNSS satellites to include in the visualization plots.
+    </p>
+    <p>
+        Results are generated using satellite orbit information from <a href="https://celestrak.com/" target="_blank">Celestrak</a>.
+    </p>
+    <div class="card mt-2 mb-5">
+        <div class="card-header" id="headerConfig" data-toggle="collapse"
+            data-target="#collapseConfig" aria-expanded="false"
+            aria-controls="collapseConfig"
+            (click)="isCollapsed['collapseConfig'] = !isCollapsed['collapseConfig']">
+            <div class="d-flex flex-row">
+                <h2 class="my-auto">
+                    Edit configuration
+                </h2>
+                <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseConfig']">
+                    <i class="fas fa-chevron-down fa-lg"></i>
+                </span>
+                <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseConfig']">
+                    <i class="fas fa-chevron-up fa-lg"></i>
+                </span>
             </div>
-            <ng-template #loading>
-                Loading...
-            </ng-template>
+        </div>
+    
+        <div class="collapse" id="collapseConfig" aria-labelledby="headerConfig"
+            data-parent="accordion" [ngbCollapse]="!isCollapsed['collapseConfig']"
+            aria-labelledby="headerConfig">
+            <div class="card-body">
+                <div *ngIf="dataLoaded else loading">
+                    <form (ngSubmit)="onSubmit(configForm)" #configForm="ngForm">
+                        <div class="form-group">
+                            <h4>Select date:</h4>
+                            <mat-form-field appearance="outline">
+                                <mat-label>Choose a date</mat-label>
+                                <input matInput [matDatepicker]="picker" [(ngModel)]="pickedDate" name="mydate" #mydate="ngModel">
+                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+            
+                        <div class="form-group">
+                            <h4>Select stations:</h4>
+                            <div id="accordion">
+                                <div class="card mb-1">
+                                    <div class="card-header" id="headerIgsComma" data-toggle="collapse"
+                                        data-target="#collapseIgsComma" aria-expanded="false"
+                                        aria-controls="collapseIgsComma"
+                                        (click)="isCollapsed['collapseIgsComma'] = !isCollapsed['collapseIgsComma']">
+                                        <div class="d-flex flex-row">
+                                            <h3 class="my-auto">
+                                                Manually provide list of IGS stations
+                                            </h3>
+                                            <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseIgsComma']">
+                                                <i class="fas fa-chevron-down fa-lg"></i>
+                                            </span>
+                                            <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseIgsComma']">
+                                                <i class="fas fa-chevron-up fa-lg"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+            
+                                    <div class="collapse" id="collapseIgsComma" aria-labelledby="headerIgsComma"
+                                        data-parent="accordion" [ngbCollapse]="!isCollapsed['collapseIgsComma']"
+                                        aria-labelledby="headerIgsComma">
+                                        <div class="card-body">
+                                            <p>Provide, as a comma separated list, the IGS stations you'd like to
+                                                configure.
+                                            </p>
+                                            <p>E.g.: <i>ABMF,IENG,ZAMB,YEL2</i></p>
+                                            <textarea class="form-control" [(ngModel)]="commaIgsStations" #mylist
+                                                name="mylist"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card mb-1">
+                                    <div class="card-header" id="headerIgsStations" data-toggle="collapse"
+                                        data-target="#collapseIgsStations" aria-expanded="false"
+                                        aria-controls="collapseIgsStations"
+                                        (click)="isCollapsed['collapseIgsStations'] = !isCollapsed['collapseIgsStations']">
+                                        <div class="d-flex flex-row">
+                                            <h3 class="my-auto">
+                                                Select from list of available IGS stations
+                                            </h3>
+                                            <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseIgsStations']">
+                                                <i class="fas fa-chevron-down fa-lg"></i>
+                                            </span>
+                                            <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseIgsStations']">
+                                                <i class="fas fa-chevron-up fa-lg"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+            
+                                    <div class="collapse" id="collapseIgsStations" aria-labelledby="headerIgsStations"
+                                        data-parent="accordion" [ngbCollapse]="!isCollapsed['collapseIgsStations']"
+                                        aria-labelledby="headerIgsStations">
+                                        <div class="card-body">
+                                            <p>Make a selection from these IGS stations:</p>
+                                            <div class="d-flex flex-row">
+            
+                                                <button type="button" class="btn btn-outline-info mx-2"
+                                                    (click)="selectAllStations()">Select all</button>
+            
+                                                <button type="button" class="btn btn-outline-danger mx-2"
+                                                    (click)="clearAllStations()">Clear all</button>
+                                            </div>
+                                            <mat-selection-list #list [(ngModel)]="selectedOptions" name="list">
+                                                <div class="wrapper">
+                                                    <mat-list-option *ngFor="let station of IgsStations"
+                                                        [value]="station">
+                                                        {{station}}
+                                                    </mat-list-option>
+                                                </div>
+                                            </mat-selection-list>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div *ngIf="invalidStations.length>=1">
+                            <div class="alert alert-warning my-2" role="alert">
+                                <div class="d-flex flex-row">
+                                    <div class="flex-column">
+                                        <div class="ml-1">
+                                            <strong>Warning</strong>: the following stations were not found:
+                                        </div>
+                                        <div class="ml-1" *ngFor="let station of invalidStations">
+                                            {{station}}
+                                        </div>
+                                    </div>
+                                    <button type="button" class="close mb-auto ml-auto" aria-label="Close"
+                                        (click)="removeErrorMsg('stations')">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="form-group">
+                            <h4>Select satellites:</h4>
+                            <div id="accordion">
+                                <div class="card mb-1">
+                                    <div class="card-header" id="headerSatsComma" data-toggle="collapse"
+                                        data-target="#collapseSatsComma" aria-expanded="false" aria-controls="collapseSatsComma"
+                                        (click)="isCollapsed['collapseSatsComma'] = !isCollapsed['collapseSatsComma']">
+                                        <div class="d-flex flex-row">
+                                            <h3 class="my-auto">
+                                                Manually provide list of satellites
+                                            </h3>
+                                            <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseSatsComma']">
+                                                <i class="fas fa-chevron-down fa-lg"></i>
+                                            </span>
+                                            <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseSatsComma']">
+                                                <i class="fas fa-chevron-up fa-lg"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+            
+                                    <div class="collapse" id="collapseIgsComma" aria-labelledby="headerSatsComma"
+                                        data-parent="accordion" [ngbCollapse]="!isCollapsed['collapseSatsComma']"
+                                        aria-labelledby="headerSatsComma">
+                                        <div class="card-body">
+                                            <p>Provide, as a comma separated list, the satellites you'd like to configure.</p>
+                                            <textarea class="form-control" [(ngModel)]="commaSats" #mylist name="mylist"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card mb-1">
+                                    <div class="card-header" id="headerSats" data-toggle="collapse" data-target="#collapseSats"
+                                        aria-expanded="false" aria-controls="collapseSats"
+                                        (click)="isCollapsed['collapseSats'] = !isCollapsed['collapseSats']">
+                                        <div class="d-flex flex-row">
+                                            <h3 class="my-auto">
+                                                Select from list of available satellites
+                                            </h3>
+                                            <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseSats']">
+                                                <i class="fas fa-chevron-down fa-lg"></i>
+                                            </span>
+                                            <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseSats']">
+                                                <i class="fas fa-chevron-up fa-lg"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+            
+                                    <div class="collapse" id="collapseSats" aria-labelledby="headerSats" data-parent="accordion"
+                                        [ngbCollapse]="!isCollapsed['collapseSats']" aria-labelledby="headerSats">
+                                        <div class="card-body">
+                                            <p>Make a selection from these satellites:</p>
+                                            <div class="d-flex flex-row">
+                                                <button type="button" class="btn btn-outline-info mx-2"
+                                                    (click)="selectAllSats('galileo')">Galileo</button>
+                                                <button type="button" class="btn btn-outline-info mx-2"
+                                                    (click)="selectAllSats('GPS')">GPS</button>
+                                                <button type="button" class="btn btn-outline-info mx-2"
+                                                    (click)="selectAllSats('glonass')">Glonass</button>
+                                                <button type="button" class="btn btn-outline-info mx-2"
+                                                    (click)="selectAllSats('beidou')">BeiDou</button>
+                                                <button type="button" class="btn btn-outline-danger mx-2"
+                                                    (click)="clearAllSats()">Clear all</button>
+                                            </div>
+                                            <mat-selection-list #list [(ngModel)]="selectedOptionsSats" name="list">
+                                                <div class="card mb-1">
+                                                    <div class="card-header" id="headerGalSats" data-toggle="collapse"
+                                                        data-target="#collapseGalSats" aria-expanded="false"
+                                                        aria-controls="collapseGalSats"
+                                                        (click)="isCollapsed['collapseGalSats'] = !isCollapsed['collapseGalSats']">
+                                                        <div class="d-flex flex-row">
+                                                            <h3 class="my-auto">
+                                                                Galileo Satellites
+                                                            </h3>
+                                                            <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseGalSats']">
+                                                                <i class="fas fa-chevron-down fa-lg"></i>
+                                                            </span>
+                                                            <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseGalSats']">
+                                                                <i class="fas fa-chevron-up fa-lg"></i>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div id="collapseGalSats" [ngbCollapse]="!isCollapsed['collapseGalSats']">
+                                                        <div class="card-body">
+                                                            <div class="wrapper">
+                                                                <mat-list-option
+                                                                    *ngFor="let satellite of filterSats(allSatellites,'E')"
+                                                                    [value]="satellite">
+                                                                    {{satellite}}
+                                                                </mat-list-option>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card mb-1">
+                                                    <div class="card-header" id="headerGPSSats" data-toggle="collapse"
+                                                        data-target="#collapseGPSSats" aria-expanded="false"
+                                                        aria-controls="collapseGPSSats"
+                                                        (click)="isCollapsed['collapseGPSSats'] = !isCollapsed['collapseGPSSats']">
+                                                        <div class="d-flex flex-row">
+                                                            <h3 class="my-auto">
+                                                                GPS Satellites
+                                                            </h3>
+                                                            <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseGPSSats']">
+                                                                <i class="fas fa-chevron-down fa-lg"></i>
+                                                            </span>
+                                                            <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseGPSSats']">
+                                                                <i class="fas fa-chevron-up fa-lg"></i>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div id="collapseGPSSats" [ngbCollapse]="!isCollapsed['collapseGPSSats']">
+                                                        <div class="card-body">
+                                                            <div class="wrapper">
+                                                                <mat-list-option
+                                                                    *ngFor="let satellite of filterSats(allSatellites,'G')"
+                                                                    [value]="satellite">
+                                                                    {{satellite}}
+                                                                </mat-list-option>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card mb-1">
+                                                    <div class="card-header" id="headerGloSats" data-toggle="collapse"
+                                                        data-target="#collapseGloSats" aria-expanded="false"
+                                                        aria-controls="collapseGloSats"
+                                                        (click)="isCollapsed['collapseGloSats'] = !isCollapsed['collapseGloSats']">
+                                                        <div class="d-flex flex-row">
+                                                            <h3 class="my-auto">
+                                                                Glonass Satellites
+                                                            </h3>
+                                                            <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseGloSats']">
+                                                                <i class="fas fa-chevron-down fa-lg"></i>
+                                                            </span>
+                                                            <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseGloSats']">
+                                                                <i class="fas fa-chevron-up fa-lg"></i>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div id="collapseGloSats" [ngbCollapse]="!isCollapsed['collapseGloSats']">
+                                                        <div class="card-body">
+                                                            <div class="wrapper">
+                                                                <mat-list-option
+                                                                    *ngFor="let satellite of filterSats(allSatellites,'R')"
+                                                                    [value]="satellite">
+                                                                    {{satellite}}
+                                                                </mat-list-option>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card mb-1">
+                                                    <div class="card-header" id="headerBeiSats" data-toggle="collapse"
+                                                        data-target="#collapseBeiSats" aria-expanded="false"
+                                                        aria-controls="collapseBeiSats"
+                                                        (click)="isCollapsed['collapseBeiSats'] = !isCollapsed['collapseBeiSats']">
+                                                        <div class="d-flex flex-row">
+                                                            <h3 class="my-auto">
+                                                                BeiDou Satellites
+                                                            </h3>
+                                                            <span class="ml-auto my-auto" *ngIf="!isCollapsed['collapseBeiSats']">
+                                                                <i class="fas fa-chevron-down fa-lg"></i>
+                                                            </span>
+                                                            <span class="ml-auto my-auto" *ngIf="isCollapsed['collapseBeiSats']">
+                                                                <i class="fas fa-chevron-up fa-lg"></i>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div id="collapseBeiSats" [ngbCollapse]="!isCollapsed['collapseBeiSats']">
+                                                        <div class="card-body">
+                                                            <div class="wrapper">
+                                                                <mat-list-option
+                                                                    *ngFor="let satellite of filterSats(allSatellites,'C')"
+                                                                    [value]="satellite">
+                                                                    {{satellite}}
+                                                                </mat-list-option>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </mat-selection-list>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div *ngIf="invalidSats.length>=1">
+                            <div class="alert alert-warning my-2" role="alert">
+                                <div class="d-flex flex-row">
+                                    <div class="flex-column">
+                                        <div class="pl-1 my-auto">
+                                            <strong>Warning</strong>: the following satellites were not found:
+                                        </div>
+                                        <div class="ml-1" *ngFor="let sat of invalidSats">
+                                            {{sat}}
+                                        </div>
+                                    </div>
+                                    <button type="button" class="close mb-auto ml-auto" aria-label="Close"
+                                        (click)="removeErrorMsg('sats')">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div *ngIf="noDataSats.length>=1">
+                            <div class="alert alert-warning my-2" role="alert">
+                                <div class="d-flex flex-row">
+                                    <div class="flex-column">
+                                        <div class="pl-1 my-auto">
+                                            <strong>Warning</strong>: no data was found for the following satellites on the provided
+                                            date:
+                                        </div>
+                                        <div class="ml-1" *ngFor="let sat of noDataSats">
+                                            {{sat}}
+                                        </div>
+                                    </div>
+                                    <button type="button" class="close mb-auto ml-auto" aria-label="Close"
+                                        (click)="removeErrorMsg('noDataSats')">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div *ngIf="invalidDate">
+                            <div class="alert alert-danger my-2" role="alert">
+                                <div class="d-flex flex-row">
+                                    <p class="pr-2 my-auto">
+                                        No data was found for the provided date.
+                                        Please provide a different date, knowing
+                                        that no data is available before 2020/01
+                                        and that the products are calculated with
+                                        a latency of 1 day.
+                                    </p>
+                                    <button type="button" class="close mb-auto ml-auto" aria-label="Close"
+                                        (click)="removeErrorMsg('date')">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div *ngIf="successfullUpload">
+                            <div class="alert alert-success my-2" role="alert">
+                                <div class="d-flex flex-row">
+                                    <p class="pr-2 my-auto">
+                                        All plots rendered with success!
+                                    </p>
+                                    <button type="button" class="close mb-auto ml-auto" aria-label="Close"
+                                        (click)="removeErrorMsg('success')">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <button type="submit" class="btn btn-success" [disabled]="!configForm.form.valid">
+                            <div *ngIf="submitLoading">
+                                Rendering plots
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                            </div>
+                            <span *ngIf="!submitLoading">Confirm</span>
+                        </button>
+            
+                    </form>
+                </div>
+                <ng-template #loading>
+                    Loading...
+                </ng-template>
+            </div>
         </div>
     </div>
 </div>
+<div *ngIf="!serverUp">
+    <div class="alert alert-danger" role="alert">
+        <h2 class="alert-heading">Ooops!</h2>
+        <p>That's an error. It looks like the server is down right now, please try again later or contact us using the following <a [routerLink]="'/contact'">link</a>.</p>
+      </div>
+</div>
+
 
 
 

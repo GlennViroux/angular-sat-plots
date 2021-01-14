@@ -16,7 +16,7 @@ export interface CardData {
         transform: 'none'
       })),
       state('flipped', style({
-        transform: 'rotateY(180deg)'
+        transform: 'rotateY(-180deg)'
       })),
       transition('default => flipped', [
         animate('400ms')
@@ -42,8 +42,6 @@ export class AboutDesktopComponent implements OnInit,AfterContentInit,AfterViewI
   ngAfterViewInit(){
     console.log("After view init")
   }
-
-
 
   updateHeight(){
     let personalImage:HTMLElement|null = document.getElementById("personal-image");

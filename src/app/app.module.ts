@@ -17,6 +17,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { CarouselModule, WavesModule } from 'angular-bootstrap-md';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
 
 import { CoverageComponent } from './coverage/coverage.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -74,7 +76,9 @@ import { AboutMobileComponent } from './about/about-mobile/about-mobile.componen
     HttpClientModule,
     CarouselModule,
     WavesModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatTooltipModule,
+    MatSelectModule
   ],
   providers: [MatDatepickerModule],
   bootstrap: [AppComponent]
