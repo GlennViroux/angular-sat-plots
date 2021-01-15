@@ -24,21 +24,20 @@
         </div>
         <div class="d-flex flex-row">
             <p class="mr-auto mt-1">
-                <a (click)="toggleText()" matTooltip="Why this image?"><i class="far fa-question-circle fa-lg"></i></a>
+                <a (click)="toggleText()" matTooltip="What's this image?"><i class="far fa-question-circle fa-lg"></i></a>
             </p>
         </div>
         <div id="why-text" [@showHide]="showInfoText">
-            <h3>Why this image?</h3>
+            <h3>What's this image?</h3>
             <p>
                 The image shown here is NASA's Astronomy Picture Of the Day, coming straight from their <a
                     href="https://apod.nasa.gov/apod/astropix.html" target="_blank">site</a>. Since June 1995 (around
                 the time I was born), they started uploading one image per day concerning some space / astronomy related
-                topic. I really like the images, and find the project in general really cool, so that's why they are
-                ending
-                up here :)
+                topic. I really like the images, and find the project in general quite cool, so that's why they are
+                ending up here :)
             </p>
             <h4>Want to see other images?</h4>
-            <p>You can choose here to show the image for another date!</p>
+            <p>Choose here to show the image for another date!</p>
             <mat-form-field appearance="outline">
                 <mat-label>Select date</mat-label>
                 <mat-select [(value)]="selectedDateStr" (selectionChange)="selectDate()">
@@ -48,7 +47,6 @@
                 </mat-select>
             </mat-form-field>
         </div>
-
     </div>
 
 </div>

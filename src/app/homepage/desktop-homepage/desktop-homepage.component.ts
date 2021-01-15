@@ -88,7 +88,6 @@ export class DesktopHomepageComponent implements OnInit {
     } else {
       this.showInfoText='showed';
     }
-    
   } 
 
 }

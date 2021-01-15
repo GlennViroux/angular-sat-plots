@@ -1,4 +1,40 @@
+@import '../../../assets/styles/constants';
+
 #main-cont{
     min-height: 95vh;
     margin-top: 15vh;
+}
+
+#welcome-title{
+    font-family: Times;
+    font-size: 50px;
+    color:$mybluecolor;
+}
+
+#main-image-cont{
+    position: relative;
+    text-align: center;
+}
+
+#main-image-foto{
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: 20px;
+}
+
+#why-text{
+    overflow: hidden;
+    padding: 10px;
+    border-radius: 10px;
+    border: 3px solid rgba(34, 66, 124, .7);
+}
+
+.fa-question-circle{
+    cursor: pointer;
+}
+
+#welcome-svg{
+    height: 20vh;
+    width: 30vw;
+    color: $mybluecolor;
 }
