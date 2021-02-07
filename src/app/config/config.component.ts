@@ -7,6 +7,7 @@ import * as d3 from "d3";
 import * as moment from 'moment';
 import { ConfigService } from '../services/config.service';
 import { HttpClient } from '@angular/common/http';
+import { ServerService } from '../services/server.service';
 
 
 @Component({
@@ -34,14 +35,34 @@ export class ConfigComponent implements OnInit {
   submitLoading: boolean = false;
   isCollapsed: { [htmlId: string]: boolean } = {};
 
-  constructor(private configService: ConfigService, http: HttpClient) {
-    http.get("https://4e17896d9fed.ngrok.io/servercheck")
+  myIp = "glenny.hopto.org";
+
+  constructor(
+    private configService: ConfigService, 
+    private serverService:ServerService, 
+    private http: HttpClient) 
+  {
+    serverService.getIp().then(value => {
+      this.myIp = value;
+      this.loadData();
+    })
+
+    configService.drawingObservable.subscribe((_: boolean) => {
+      this.submitLoading = false;
+      this.successfullUpload = true;
+    });
+  }
+
+  ngOnInit(): void { }
+
+  loadData(){
+    this.http.get(`https://${this.myIp}/servercheck`)
     .toPromise()
     .then((_:any) => {
-      d3.json<Promise<string[]>>("https://4e17896d9fed.ngrok.io/stations")
+      d3.json<Promise<string[]>>(`https://${this.myIp}/stations`)
       .then((d: any) => {
         this.IgsStations = d;
-        d3.json<Promise<string[]>>("https://4e17896d9fed.ngrok.io/prns")
+        d3.json<Promise<string[]>>(`https://${this.myIp}/prns`)
         .then((d: any) => {
           this.allSatellites = d.sort((n1: string, n2: string) => {
             if (n1 > n2) {
@@ -61,16 +82,7 @@ export class ConfigComponent implements OnInit {
       this.serverUp = false;
       this.configService.submitServerInfo(false);
     });
-
-
-
-    configService.drawingObservable.subscribe((_: boolean) => {
-      this.submitLoading = false;
-      this.successfullUpload = true;
-    });
   }
-
-  ngOnInit(): void { }
 
   initialConfig(): void {
     let newConfig = new Config();
@@ -104,7 +116,7 @@ export class ConfigComponent implements OnInit {
     if (providedConfig) {
       myDate = providedConfig.date;
     }
-    let checkData: any = await d3.json(`https://4e17896d9fed.ngrok.io/check?year=${myDate.format("YYYY")}&month=${myDate.format("MM")}&day=${myDate.format("DD")}`)
+    let checkData: any = await d3.json(`https://${this.myIp}/check?year=${myDate.format("YYYY")}&month=${myDate.format("MM")}&day=${myDate.format("DD")}`)
     if (!checkData.sat_points || !checkData.sat_track || !checkData.stations) {
       this.invalidDate = true;
       this.submitLoading = false;
@@ -142,7 +154,7 @@ export class ConfigComponent implements OnInit {
     let satsCopy: string[] = [...configuredSatellites];
     for (let index = 0; index < satsCopy.length; index++) {
       let sat: string = satsCopy[index];
-      let checkData: any = await d3.json(`https://4e17896d9fed.ngrok.io/check?sat=${sat}&year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
+      let checkData: any = await d3.json(`https://${this.myIp}/check?sat=${sat}&year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
       if (!sat) {
         let removeIndex: number = configuredSatellites.indexOf(sat);
         configuredSatellites.splice(removeIndex, 1);

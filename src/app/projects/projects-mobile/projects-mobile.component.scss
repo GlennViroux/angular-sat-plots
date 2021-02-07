@@ -1,9 +1,12 @@
+@import '../../../assets/styles/constants.scss';
 
 #projects-container {
     min-height: 95vh;
 }
+
 #projects-title {
-    text-align: center;
+    text-align: left;
+    color: $mybluecolor;
     margin-top: 5vh;
 }
 

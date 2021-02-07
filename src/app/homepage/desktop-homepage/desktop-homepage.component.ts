@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
 import * as moment from 'moment';
+import { ServerService } from 'src/app/services/server.service';
 
 @Component({
   selector: 'app-desktop-homepage',
@@ -44,22 +45,29 @@ export class DesktopHomepageComponent implements OnInit {
   selectedDateStr:string = "";
   allDates:string[] = [];
 
-  constructor(private http:HttpClient) {
+  myIp = "glenny.hopto.org";
+
+  constructor(private http:HttpClient, serverService:ServerService) {
     this.selectedDate = moment();
-    this.loadData(this.selectedDate);
+    serverService.getIp().then(value => {
+      console.log("Glenny homepage");
+      console.log(value);
+      this.myIp = value;
+      this.loadData(this.selectedDate);
+    })
   }
 
   ngOnInit(): void {}
 
   async loadData(date:any){
     this.dataLoaded = false;
-    this.apod_url = `https://4e17896d9fed.ngrok.io/apod/image?year=${date.format('YYYY')}&month=${date.format("MM")}&day=${date.format("DD")}&closest=true`;
-    await this.http.get(`https://4e17896d9fed.ngrok.io/apod/json?year=${date.format('YYYY')}&month=${date.format("MM")}&day=${date.format("DD")}&closest=true`)
+    this.apod_url = `https://${this.myIp}/apod/image?year=${date.format('YYYY')}&month=${date.format("MM")}&day=${date.format("DD")}&closest=true`;
+    await this.http.get(`https://${this.myIp}/apod/json?year=${date.format('YYYY')}&month=${date.format("MM")}&day=${date.format("DD")}&closest=true`)
     .toPromise()
     .then((response:any) => {
       this.apod_json = response;
     });
-    await this.http.get('https://4e17896d9fed.ngrok.io/apod/dates')
+    await this.http.get(`https://${this.myIp}/apod/dates`)
     .toPromise()
     .then((response:any) => {
       this.allDates = response;
@@ -68,9 +76,7 @@ export class DesktopHomepageComponent implements OnInit {
   }
 
   selectDate(){
-    console.log(this.selectedDateStr);
     this.selectedDate = moment(this.selectedDateStr,"YYYY/MM/DD");
-    console.log(this.selectedDate);
     this.loadData(this.selectedDate);
   }
 

@@ -1,11 +1,13 @@
+@import '../../../assets/styles/constants.scss';
 
 #exp-container {
     min-height: 95vh;
 }
 
 #exp-title {
-    text-align: center;
+    text-align: left;
     margin-top: 5vh;
+    color: $mybluecolor;
 }
 
 .card {

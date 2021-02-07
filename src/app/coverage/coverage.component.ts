@@ -4,6 +4,7 @@ import { Config } from '../config';
 import * as d3 from 'd3';
 import * as d3Geo from 'd3-geo-voronoi';
 import { ConfigService } from '../services/config.service';
+import { ServerService } from '../services/server.service';
 
 @Component({
   selector: 'app-coverage',
@@ -55,7 +56,13 @@ export class CoverageComponent implements OnInit {
   satTipsTimes: {[prn:string]:any} = {};
   margin_times: any = { top: 40, right: 20, bottom: 50, left: 60 };
 
-  constructor(configService:ConfigService) {
+  myIp = "glenny.hopto.org";
+
+  constructor(configService:ConfigService, serverService:ServerService) {
+    serverService.getIp().then(value => {
+      this.myIp = value;
+    })
+
     this.outer_width = 1150;
     this.outer_height = 700
     this.width = this.outer_width - this.margin.left - this.margin.right;
@@ -173,7 +180,7 @@ export class CoverageComponent implements OnInit {
 
   //GeoMap Plot
   async drawCountries() {
-    let pathData: any = <any>await d3.json("https://4e17896d9fed.ngrok.io/earth");
+    let pathData: any = <any>await d3.json(`https://${this.myIp}/earth`);
     this.g.selectAll("countries")
       .data(pathData.features)
       .join("path")
@@ -202,7 +209,7 @@ export class CoverageComponent implements OnInit {
       let year:string = this.plotConfig.date.format("YYYY");
       let month:string = this.plotConfig.date.format("MM");
       let day:string = this.plotConfig.date.format("DD");
-      let dataJSON: any = <any>await d3.json(`https://4e17896d9fed.ngrok.io/data/sat_track/${prn}?year=${year}&month=${month}&day=${day}`);
+      let dataJSON: any = <any>await d3.json(`https://${this.myIp}/data/sat_track/${prn}?year=${year}&month=${month}&day=${day}`);
   
       let newPath:any = this.g.append("path")
         .data(dataJSON.features)
@@ -224,7 +231,7 @@ export class CoverageComponent implements OnInit {
       let month:string = this.plotConfig.date.format("MM");
       let day:string = this.plotConfig.date.format("DD");
   
-      let dataJSON: any = <any>await d3.json(`https://4e17896d9fed.ngrok.io/data/sat_points/${prn}?year=${year}&month=${month}&day=${day}`);
+      let dataJSON: any = <any>await d3.json(`https://${this.myIp}/data/sat_points/${prn}?year=${year}&month=${month}&day=${day}`);
 
       for (let feature of dataJSON.features){
         let stationsInViewArray:string[] = feature.properties.stations_in_view.split(" ");
@@ -363,7 +370,7 @@ export class CoverageComponent implements OnInit {
     let year:string = this.plotConfig.date.format("YYYY");
     let month:string = this.plotConfig.date.format("MM");
     let day:string = this.plotConfig.date.format("DD");
-    let dataJSON: any = <any>await d3.json(`https://4e17896d9fed.ngrok.io/data/igs_stations/T01?year=${year}&month=${month}&day=${day}`);
+    let dataJSON: any = <any>await d3.json(`https://${this.myIp}/data/igs_stations/T01?year=${year}&month=${month}&day=${day}`);
     this.igsStationsData = dataJSON;
     this.igsStationsData.features = dataJSON.features.filter((d: any) => {
       return configuredStations.includes(d.properties.station);
@@ -492,19 +499,6 @@ export class CoverageComponent implements OnInit {
         return {epoch:new Date(feature.properties.epoch),stations:feature.properties.number_stations_in_view}
       });
       this.data[prn] = newData;
-
-      /*
-      let year:string = this.plotConfig.date.format("YYYY");
-      let month:string = this.plotConfig.date.format("MM");
-      let day:string = this.plotConfig.date.format("DD");
-      let dataJSON:any = <any>await d3.json(`https://4e17896d9fed.ngrok.io/data/timeseries/${prn}?year=${year}&month=${month}&day=${day}`);
-      dataJSON = dataJSON.map((element:any)=>{
-        let newElement = element
-        newElement.epoch = new Date(element.epoch);
-        return newElement;
-      });
-      this.data[prn] = dataJSON;
-      */
     }
   }
 
@@ -623,7 +617,6 @@ export class CoverageComponent implements OnInit {
   }
 
   setStationLabels(event:any){
-    console.log(event.srcElement.checked);
     if (event.srcElement.checked){
       this.drawStationTips();
       this.enableConfig["stationLabels"] = true;

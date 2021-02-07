@@ -1,9 +1,12 @@
+@import '../../../assets/styles/constants.scss';
 
 #contact-container {
     min-height: 95vh;
 }
+
 #contact-title {
-    text-align: center;
+    text-align: left;
     margin-top: 5vh;
     margin-bottom: 5vh;
+    color: $mybluecolor;
 }

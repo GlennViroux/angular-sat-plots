@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { map } from 'rxjs/operators';
+import { ServerService } from 'src/app/services/server.service';
 
 @Component({
   selector: 'app-contact-mobile',
@@ -16,12 +17,16 @@ export class ContactMobileComponent implements OnInit {
   public errorMsg:string = "";
 
   public formData: FormGroup;
-  private mailApi: string = "https://4e17896d9fed.ngrok.io/sendmail";
+  private mailApi: string = "https://glenny.hopto.org/sendmail";
 
   constructor(
     builder: FormBuilder,
-    private http: HttpClient
-  ) {
+    private http: HttpClient,
+    serverService:ServerService) 
+  {
+    serverService.getIp().then(value => {
+      this.mailApi = `https://${value}/sendmail`;
+    })
     this.formData = builder.group(({
       fullName: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -30,7 +35,6 @@ export class ContactMobileComponent implements OnInit {
   }
 
   postMessage(input: any) {
-    console.log(input)
     return this.http.post(this.mailApi, input)
       .pipe(
         map(

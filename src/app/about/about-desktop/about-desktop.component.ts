@@ -27,21 +27,12 @@ export interface CardData {
     ])
   ]
 })
-export class AboutDesktopComponent implements OnInit,AfterContentInit,AfterViewInit {
+export class AboutDesktopComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
-    console.log("On Init")    
-  }
+  ngOnInit(): void {}
 
-  ngAfterContentInit(){
-    console.log("After content init")
-  }
-
-  ngAfterViewInit(){
-    console.log("After view init")
-  }
 
   updateHeight(){
     let personalImage:HTMLElement|null = document.getElementById("personal-image");
@@ -59,7 +50,6 @@ export class AboutDesktopComponent implements OnInit,AfterContentInit,AfterViewI
 
   cardClicked() {
     this.updateHeight();
-    console.log("card clicked!");
     if (this.data.state === "default") {
       this.data.state = "flipped";
     } else {
