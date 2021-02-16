@@ -35,11 +35,11 @@ export class ConfigComponent implements OnInit {
   submitLoading: boolean = false;
   isCollapsed: { [htmlId: string]: boolean } = {};
 
-  myIp = "glenny.hopto.org";
+  myIp = "";
 
   constructor(
     private configService: ConfigService, 
-    private serverService:ServerService, 
+    serverService:ServerService, 
     private http: HttpClient) 
   {
     serverService.getIp().then(value => {

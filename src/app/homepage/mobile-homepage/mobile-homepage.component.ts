@@ -33,10 +33,9 @@ export class MobileHomepageComponent implements OnInit {
   apod_url:string = "";
   apod_json:any;
   selectedDate:any;
-  selectedDateStr:string = "";
   allDates:string[] = [];
 
-  myIp = "glenny.hopto.org";
+  myIp = "";
 
   constructor(private http:HttpClient, private serverService:ServerService) {
     this.selectedDate = moment();
@@ -66,7 +65,6 @@ export class MobileHomepageComponent implements OnInit {
   }
 
   selectDate(){
-    this.selectedDate = moment(this.selectedDateStr,"YYYY/MM/DD");
     this.loadData(this.selectedDate);
   }
 
@@ -85,5 +83,16 @@ export class MobileHomepageComponent implements OnInit {
       this.showInfoText='showed';
     }
   } 
+
+  myFilter = (d: Date | null): boolean => {
+    if (d){
+      let dateString = moment(d).format("YYYY/MM/DD");
+      if (this.allDates.indexOf(dateString)>=0){
+        return true;
+      }
+    }
+    
+    return false;
+  }
 
 }

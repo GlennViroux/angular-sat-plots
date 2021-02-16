@@ -38,6 +38,7 @@
             </p>
             <h4>Want to see other images?</h4>
             <p>Choose here to show the image for another date!</p>
+            <!--
             <mat-form-field appearance="outline">
                 <mat-label>Select date</mat-label>
                 <mat-select [(value)]="selectedDateStr" (selectionChange)="selectDate()">
@@ -46,6 +47,14 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
+            -->
+            <mat-form-field appearance="outline">
+                <mat-label>Choose a date</mat-label>
+                <input matInput [matDatepickerFilter]="myFilter" [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="selectDate()">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
         </div>
     </div>
 

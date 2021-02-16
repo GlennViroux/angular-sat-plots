@@ -8,6 +8,7 @@ import { ExperienceDesktopComponent } from './experience/experience-desktop/expe
 import { ExperienceMobileComponent } from './experience/experience-mobile/experience-mobile.component';
 import { DesktopHomepageComponent } from './homepage/desktop-homepage/desktop-homepage.component';
 import { MobileHomepageComponent } from './homepage/mobile-homepage/mobile-homepage.component';
+import { LoaderComponent } from './loader/loader.component';
 import { ProjectsDesktopComponent } from './projects/projects-desktop/projects-desktop.component';
 import { ProjectsMobileComponent } from './projects/projects-mobile/projects-mobile.component';
 import { SatplotsDesktopComponent } from './satplots/satplots-desktop/satplots-desktop.component';
@@ -21,7 +22,8 @@ const desktopRoutes: Routes = [
   {path:'projects',component:ProjectsDesktopComponent},
   {path:'about',component:AboutDesktopComponent},
   {path:'experience',component:ExperienceDesktopComponent},
-  {path:'contact',component:ContactDesktopComponent}
+  {path:'contact',component:ContactDesktopComponent},
+  {path:'loader',component:LoaderComponent}
 ];
 
 const mobileRoutes: Routes = [

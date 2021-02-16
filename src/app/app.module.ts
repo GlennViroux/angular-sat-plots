@@ -37,6 +37,7 @@ import { SatplotsMobileComponent } from './satplots/satplots-mobile/satplots-mob
 import { ExperienceMobileComponent } from './experience/experience-mobile/experience-mobile.component';
 import { ContactMobileComponent } from './contact/contact-mobile/contact-mobile.component';
 import { AboutMobileComponent } from './about/about-mobile/about-mobile.component';
+import { LoaderComponent } from './loader/loader.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { AboutMobileComponent } from './about/about-mobile/about-mobile.componen
     SatplotsMobileComponent,
     ExperienceMobileComponent,
     ContactMobileComponent,
-    AboutMobileComponent
+    AboutMobileComponent,
+    LoaderComponent
   ],
   imports: [
     BrowserModule,

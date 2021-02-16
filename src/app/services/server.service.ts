@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class ServerService {
 
-  serverIp = "";
+  serverIp = "203e3fcb02c2.ngrok.io";
 
   constructor(private http:HttpClient) {}
 

@@ -42,16 +42,13 @@ export class DesktopHomepageComponent implements OnInit {
   apod_url:string = "";
   apod_json:any;
   selectedDate:any;
-  selectedDateStr:string = "";
   allDates:string[] = [];
 
-  myIp = "glenny.hopto.org";
+  myIp = "";
 
   constructor(private http:HttpClient, serverService:ServerService) {
     this.selectedDate = moment();
     serverService.getIp().then(value => {
-      console.log("Glenny homepage");
-      console.log(value);
       this.myIp = value;
       this.loadData(this.selectedDate);
     })
@@ -76,7 +73,6 @@ export class DesktopHomepageComponent implements OnInit {
   }
 
   selectDate(){
-    this.selectedDate = moment(this.selectedDateStr,"YYYY/MM/DD");
     this.loadData(this.selectedDate);
   }
 
@@ -96,4 +92,14 @@ export class DesktopHomepageComponent implements OnInit {
     }
   } 
 
+  myFilter = (d: Date | null): boolean => {
+    if (d){
+      let dateString = moment(d).format("YYYY/MM/DD");
+      if (this.allDates.indexOf(dateString)>=0){
+        return true;
+      }
+    }
+    
+    return false;
+  }
 }
