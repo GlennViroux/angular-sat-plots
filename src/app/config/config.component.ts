@@ -56,13 +56,13 @@ export class ConfigComponent implements OnInit {
   ngOnInit(): void { }
 
   loadData(){
-    this.http.get(`https://${this.myIp}/servercheck`)
+    this.http.get(`http://${this.myIp}/servercheck`)
     .toPromise()
     .then((_:any) => {
-      d3.json<Promise<string[]>>(`https://${this.myIp}/stations`)
+      d3.json<Promise<string[]>>(`http://${this.myIp}/stations`)
       .then((d: any) => {
         this.IgsStations = d;
-        d3.json<Promise<string[]>>(`https://${this.myIp}/prns`)
+        d3.json<Promise<string[]>>(`http://${this.myIp}/prns`)
         .then((d: any) => {
           this.allSatellites = d.sort((n1: string, n2: string) => {
             if (n1 > n2) {
@@ -116,7 +116,7 @@ export class ConfigComponent implements OnInit {
     if (providedConfig) {
       myDate = providedConfig.date;
     }
-    let checkData: any = await d3.json(`https://${this.myIp}/check?year=${myDate.format("YYYY")}&month=${myDate.format("MM")}&day=${myDate.format("DD")}`)
+    let checkData: any = await d3.json(`http://${this.myIp}/check?year=${myDate.format("YYYY")}&month=${myDate.format("MM")}&day=${myDate.format("DD")}`)
     if (!checkData.sat_points || !checkData.sat_track || !checkData.stations) {
       this.invalidDate = true;
       this.submitLoading = false;
@@ -154,7 +154,7 @@ export class ConfigComponent implements OnInit {
     let satsCopy: string[] = [...configuredSatellites];
     for (let index = 0; index < satsCopy.length; index++) {
       let sat: string = satsCopy[index];
-      let checkData: any = await d3.json(`https://${this.myIp}/check?sat=${sat}&year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
+      let checkData: any = await d3.json(`http://${this.myIp}/check?sat=${sat}&year=${this.pickedDate.format("YYYY")}&month=${this.pickedDate.format("MM")}&day=${this.pickedDate.format("DD")}`)
       if (!sat) {
         let removeIndex: number = configuredSatellites.indexOf(sat);
         configuredSatellites.splice(removeIndex, 1);

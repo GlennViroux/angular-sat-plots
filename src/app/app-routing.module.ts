@@ -9,6 +9,8 @@ import { ExperienceMobileComponent } from './experience/experience-mobile/experi
 import { DesktopHomepageComponent } from './homepage/desktop-homepage/desktop-homepage.component';
 import { MobileHomepageComponent } from './homepage/mobile-homepage/mobile-homepage.component';
 import { LoaderComponent } from './loader/loader.component';
+import { DesktopMclassComponent } from './mclass/desktop-mclass/desktop-mclass.component';
+import { MobileMclassComponent } from './mclass/mobile-mclass/mobile-mclass.component';
 import { ProjectsDesktopComponent } from './projects/projects-desktop/projects-desktop.component';
 import { ProjectsMobileComponent } from './projects/projects-mobile/projects-mobile.component';
 import { SatplotsDesktopComponent } from './satplots/satplots-desktop/satplots-desktop.component';
@@ -23,7 +25,8 @@ const desktopRoutes: Routes = [
   {path:'about',component:AboutDesktopComponent},
   {path:'experience',component:ExperienceDesktopComponent},
   {path:'contact',component:ContactDesktopComponent},
-  {path:'loader',component:LoaderComponent}
+  {path:'loader',component:LoaderComponent},
+  {path:'mclas',component:DesktopMclassComponent}
 ];
 
 const mobileRoutes: Routes = [
@@ -32,7 +35,8 @@ const mobileRoutes: Routes = [
   {path:'projects',component:ProjectsMobileComponent},
   {path:'about',component:AboutMobileComponent},
   {path:'experience',component:ExperienceMobileComponent},
-  {path:'contact',component:ContactMobileComponent}
+  {path:'contact',component:ContactMobileComponent},
+  {path:'mclas',component:MobileMclassComponent}
 ];
 
 @NgModule({

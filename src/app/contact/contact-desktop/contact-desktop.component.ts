@@ -25,7 +25,7 @@ export class ContactDesktopComponent implements OnInit {
     serverService:ServerService) 
   {
     serverService.getIp().then(value => {
-      this.mailApi = `https://${value}/sendmail`;
+      this.mailApi = `http://${value}/sendmail`;
     })
     this.formData = builder.group(({
       fullName: new FormControl('', [Validators.required]),

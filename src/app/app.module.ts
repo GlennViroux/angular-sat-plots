@@ -37,6 +37,8 @@ import { ExperienceMobileComponent } from './experience/experience-mobile/experi
 import { ContactMobileComponent } from './contact/contact-mobile/contact-mobile.component';
 import { AboutMobileComponent } from './about/about-mobile/about-mobile.component';
 import { LoaderComponent } from './loader/loader.component';
+import { DesktopMclassComponent } from './mclass/desktop-mclass/desktop-mclass.component';
+import { MobileMclassComponent } from './mclass/mobile-mclass/mobile-mclass.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +59,9 @@ import { LoaderComponent } from './loader/loader.component';
     ExperienceMobileComponent,
     ContactMobileComponent,
     AboutMobileComponent,
-    LoaderComponent
+    LoaderComponent,
+    DesktopMclassComponent,
+    MobileMclassComponent
   ],
   imports: [
     BrowserModule,

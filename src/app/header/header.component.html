@@ -23,21 +23,33 @@
                     <a class="nav-link" (click)="clickEvent($event,'experience')">Experience</a>
                 </li>
 
-                <!--
-                <li class="nav-item mx-1">
-                    <div class="myline-bottom"></div>
-                    <a class="nav-link" (click)="clickEvent($event,'projects')">Projects</a>
-                </li>
-                -->
+                <span *ngIf="!appStateService.getIsMobileResolution()">
+                    <li ngbDropdown class="nav-item mx-1">
+                        <div class="myline-bottom"></div>
+                        <a class="nav-link" id="dropdownProjects" ngbDropdownToggle>Projects</a>
+                        <div ngbDropdownMenu aria-labelledby="dropdownProjects">
+                          <a ngbDropdownItem (click)="clickEvent($event,'projects')">Overview</a>
+                          <a ngbDropdownItem (click)="clickEvent($event,'satplots')">GNSS Coverage</a>
+                          <a ngbDropdownItem (click)="clickEvent($event,'mclas')">Music Classifier</a>
+                        </div>
+                    </li>
+                </span>
 
-                <li ngbDropdown class="nav-item mx-1">
-                    <div class="myline-bottom"></div>
-                    <a class="nav-link" id="dropdownProjects" ngbDropdownToggle>Projects</a>
-                    <div ngbDropdownMenu aria-labelledby="dropdownProjects">
-                      <a ngbDropdownItem (click)="clickEvent($event,'projects')">Overview</a>
-                      <a ngbDropdownItem (click)="clickEvent($event,'satplots')">GNSS Coverage</a>
-                    </div>
-                </li>
+                <span *ngIf="appStateService.getIsMobileResolution()">
+                    <li class="nav-item mx-1">
+                        <div class="myline-bottom"></div>
+                        <a class="nav-link" (click)="clickEvent($event,'projects')">Projects overview</a>
+                    </li>
+                    <li class="nav-item mx-1">
+                        <div class="myline-bottom"></div>
+                        <a class="nav-link" (click)="clickEvent($event,'satplots')">GNSS Coverage</a>
+                    </li>
+                    <li class="nav-item mx-1">
+                        <div class="myline-bottom"></div>
+                        <a class="nav-link" (click)="clickEvent($event,'mclas')">Music Classifier</a>
+                    </li>
+                </span>
+
 
                 <li class="nav-item mx-1">
                     <div class="myline-bottom"></div>

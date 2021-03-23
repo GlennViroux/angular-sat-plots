@@ -50,13 +50,13 @@ export class MobileHomepageComponent implements OnInit {
 
   async loadData(date:any){
     this.dataLoaded = false;
-    this.apod_url = `https://${this.myIp}/apod/image?year=${date.format('YYYY')}&month=${date.format("MM")}&day=${date.format("DD")}&closest=true`;
-    await this.http.get(`https://${this.myIp}/apod/json?year=${date.format('YYYY')}&month=${date.format("MM")}&day=${date.format("DD")}&closest=true`)
+    this.apod_url = `http://${this.myIp}/apod/image?year=${date.format('YYYY')}&month=${date.format("MM")}&day=${date.format("DD")}&closest=true`;
+    await this.http.get(`http://${this.myIp}/apod/json?year=${date.format('YYYY')}&month=${date.format("MM")}&day=${date.format("DD")}&closest=true`)
     .toPromise()
     .then((response:any) => {
       this.apod_json = response;
     });
-    await this.http.get(`https://${this.myIp}/apod/dates`)
+    await this.http.get(`http://${this.myIp}/apod/dates`)
     .toPromise()
     .then((response:any) => {
       this.allDates = response;

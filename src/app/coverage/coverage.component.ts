@@ -56,7 +56,7 @@ export class CoverageComponent implements OnInit {
   satTipsTimes: {[prn:string]:any} = {};
   margin_times: any = { top: 40, right: 20, bottom: 50, left: 60 };
 
-  myIp = "glenny.hopto.org";
+  myIp = "";
 
   constructor(configService:ConfigService, serverService:ServerService) {
     serverService.getIp().then(value => {
@@ -180,7 +180,7 @@ export class CoverageComponent implements OnInit {
 
   //GeoMap Plot
   async drawCountries() {
-    let pathData: any = <any>await d3.json(`https://${this.myIp}/earth`);
+    let pathData: any = <any>await d3.json(`http://${this.myIp}/earth`);
     this.g.selectAll("countries")
       .data(pathData.features)
       .join("path")
@@ -209,7 +209,7 @@ export class CoverageComponent implements OnInit {
       let year:string = this.plotConfig.date.format("YYYY");
       let month:string = this.plotConfig.date.format("MM");
       let day:string = this.plotConfig.date.format("DD");
-      let dataJSON: any = <any>await d3.json(`https://${this.myIp}/data/sat_track/${prn}?year=${year}&month=${month}&day=${day}`);
+      let dataJSON: any = <any>await d3.json(`http://${this.myIp}/data/sat_track/${prn}?year=${year}&month=${month}&day=${day}`);
   
       let newPath:any = this.g.append("path")
         .data(dataJSON.features)
@@ -231,7 +231,7 @@ export class CoverageComponent implements OnInit {
       let month:string = this.plotConfig.date.format("MM");
       let day:string = this.plotConfig.date.format("DD");
   
-      let dataJSON: any = <any>await d3.json(`https://${this.myIp}/data/sat_points/${prn}?year=${year}&month=${month}&day=${day}`);
+      let dataJSON: any = <any>await d3.json(`http://${this.myIp}/data/sat_points/${prn}?year=${year}&month=${month}&day=${day}`);
 
       for (let feature of dataJSON.features){
         let stationsInViewArray:string[] = feature.properties.stations_in_view.split(" ");
@@ -370,7 +370,7 @@ export class CoverageComponent implements OnInit {
     let year:string = this.plotConfig.date.format("YYYY");
     let month:string = this.plotConfig.date.format("MM");
     let day:string = this.plotConfig.date.format("DD");
-    let dataJSON: any = <any>await d3.json(`https://${this.myIp}/data/igs_stations/T01?year=${year}&month=${month}&day=${day}`);
+    let dataJSON: any = <any>await d3.json(`http://${this.myIp}/data/igs_stations/T01?year=${year}&month=${month}&day=${day}`);
     this.igsStationsData = dataJSON;
     this.igsStationsData.features = dataJSON.features.filter((d: any) => {
       return configuredStations.includes(d.properties.station);
