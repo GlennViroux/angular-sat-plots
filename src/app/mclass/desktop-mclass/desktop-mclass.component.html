@@ -9,7 +9,7 @@
     </p>
     <p>
         You can provide an audio file, or make a sound recording. In either case, make sure that the audio
-        fragment contains at least 40 seconds of sound, in order to have a higher accuracy obtained by the
+        fragment contains at least 20 seconds of sound, in order to have a higher accuracy obtained by the
         neural network. Also, please note that a provided audio file will most likely produce more accurate
         results, as it usually contains more data than a recorded audio sample, and it doesn't include any
         background noise.
@@ -26,8 +26,11 @@
         </div>
         <br><br>
         <label class="btn btn-light mx-auto w-50">
+            <!--
             <span *ngIf="uploading" class="spinner-border spinner-border-sm mr-1"></span>
             <span *ngIf="!uploading">Upload file</span>
+            -->
+            <span>Upload file</span>
             <input type="file" accept="audio/*" hidden (change)="sendAudioBytes($event)">
         </label>
         <br>
@@ -37,7 +40,13 @@
         </span>
         <span *ngIf="showError" class="w-50 mx-auto alert alert-danger">
             <p>Uuups, something went wrong!</p>
-            <p [innerHTML]="errorText">The error says: {{errorText}}</p>
+            <p [innerHTML]="errorText">{{errorText}}</p>
+        </span>
+        <span *ngIf="showRecordInfo" class="w-50 mx-auto alert alert-info">
+            <p>Please note that the model used was trained using high quality audio samples, 
+                and as such it's proven accuracy for recorded audio samples is much lower than 
+                the one for provided audio files.
+            </p>
         </span>
 
         <span *ngIf="showResult" class="w-50 mx-auto">
@@ -49,8 +58,8 @@
             </p>
         </span>
 
-
+        <span *ngIf="uploading" class="w-50 mx-auto">
+            <app-progress-bar [progress]="progressPerc" [status]="progressStatus"></app-progress-bar>
+        </span>
     </div>
-
-
 </div>

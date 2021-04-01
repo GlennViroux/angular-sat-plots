@@ -56,6 +56,10 @@ export class CoverageComponent implements OnInit {
   satTipsTimes: {[prn:string]:any} = {};
   margin_times: any = { top: 40, right: 20, bottom: 50, left: 60 };
 
+  progressPerc = 5;
+  progressStatus = "Checking configuration...";
+  fixcolors = true;
+
   myIp = "";
 
   constructor(configService:ConfigService, serverService:ServerService) {
@@ -93,29 +97,45 @@ export class CoverageComponent implements OnInit {
 
   ngOnInit(){}
 
+  private updateStatus(perc:number,status:string){
+    this.progressPerc = perc;
+    this.progressStatus = status;
+  }
+
   async drawAll() {
 
+    this.updateStatus(5,"Initializing global map...");
     this.initSvg();
 
     //GeoMap Plot
+    this.updateStatus(15,"Drawing countries...");
     await this.drawCountries();
+    this.updateStatus(25,"Drawing graticule...");
     this.drawGraticule();
+    this.updateStatus(35,"Drawing satellite ground tracks...");
     await this.drawSatTrack();
+    this.updateStatus(45,"Drawing voronoi grid...");
     await this.drawVoronoi();
+    this.updateStatus(55,"Animating satellite ground tracks...");
     this.drawMovingSat();
+    this.updateStatus(65,"Drawing IGS ground stations...");
     await this.drawIgsStations();
     if (this.enableConfig["connectionLines"]){
+      this.updateStatus(75,"Drawing lines of sight...");
       this.drawSatStationConnections();
     }
     
     //Timeseries Plot
+    this.updateStatus(85,"Making timeseries graph...");
     this.getDataTimeseries();
+    this.updateStatus(100,"Finished!");
     this.drawAxes();
     this.drawGrid();
     this.drawLines();
     this.drawMovingSatTimes();
 
     this.renderComplete = true;
+    
   }
 
   initSvg() {

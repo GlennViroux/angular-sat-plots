@@ -1,8 +1,12 @@
 <div *ngIf="serverUp">
     <h2>Data visualization</h2>
-
+    <!--
     <div *ngIf="!renderComplete">
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+    -->
+    <div *ngIf="!renderComplete">
+        <app-progress-bar [progress]="progressPerc" [status]="progressStatus" [fixcolors]="fixcolors"></app-progress-bar>
     </div>
     <div [hidden]="!renderComplete">
         <div class="d-flex flex-row mb-3" style="height: 40px;">

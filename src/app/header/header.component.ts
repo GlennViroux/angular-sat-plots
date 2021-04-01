@@ -16,7 +16,7 @@ export class HeaderComponent implements OnInit {
     router.events.subscribe((val:any) => {
       if (val instanceof NavigationEnd){
         if (val.url=="/satplots"){
-          this.showHeader = false;
+          this.showHeader = true;
         } else {
           this.showHeader = true;
         }

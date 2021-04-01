@@ -39,6 +39,7 @@ import { AboutMobileComponent } from './about/about-mobile/about-mobile.componen
 import { LoaderComponent } from './loader/loader.component';
 import { DesktopMclassComponent } from './mclass/desktop-mclass/desktop-mclass.component';
 import { MobileMclassComponent } from './mclass/mobile-mclass/mobile-mclass.component';
+import { ProgressBarComponent } from './progress-bar/progress-bar.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { MobileMclassComponent } from './mclass/mobile-mclass/mobile-mclass.comp
     AboutMobileComponent,
     LoaderComponent,
     DesktopMclassComponent,
-    MobileMclassComponent
+    MobileMclassComponent,
+    ProgressBarComponent
   ],
   imports: [
     BrowserModule,
